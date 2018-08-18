@@ -1,0 +1,17 @@
+{
+	"appId": "myAppId",
+	"masterKey": "master",
+	"cloud": "./cloud_code/cloud/main.js",
+	"liveQuery": {
+		"classNames": [
+			"Location",
+			"Hint",
+			"Log"
+		]
+	},
+	"startLiveQueryServer": true,
+	"liveQueryServerOptions": {
+		"appId": "myAppId",
+		"masterKey": "master"
+	}
+}

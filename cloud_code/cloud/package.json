@@ -1,0 +1,6 @@
+{
+	"dependencies": {
+		"i18n-iso-countries": "^3.7.4"
+	},
+	"devDependencies": {}
+}

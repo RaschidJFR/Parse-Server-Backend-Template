@@ -2,6 +2,8 @@
 	"appId": "myAppId",
 	"masterKey": "master",
 	"cloud": "./cloud_code/cloud/main.js",
+	"mountPath": "/driskit",
+	"databaseURI": "mongodb://localhost/driskit",
 	"liveQuery": {
 		"classNames": [
 			"Location",

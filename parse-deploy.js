@@ -5,8 +5,8 @@
 
 const PATH = './cloud_code/cloud';
 if (lint(PATH))
-	// deployToBack4App(PATH);
-	// else
+	deployToBack4App(PATH);
+else
 	console.log("\nFinished with errors\n");
 
 
@@ -16,7 +16,8 @@ function lint(path) {
 	const cli = new CLIEngine();
 
 	// lint myfile.js and all files in lib/
-	var report = cli.executeOnFiles([path]);
+	let errorCount = 0;
+	const report = cli.executeOnFiles([path]);
 	report.results.forEach(file => {
 		if (!file.filePath.includes('node_modules')) {
 			console.log(`${file.filePath}`);
@@ -30,13 +31,14 @@ function lint(path) {
 				const rule = message.ruleId;
 
 				console.log(`${line}:${col}\t${severity}\t${msg}\t${rule}\t${file.filePath}:${line}:${col}`);
+				errorCount += severity > 1 ? 1 : 0;
 			});
 		}
 
 	});
 
-	const passed = report.errorCount < 1;
-	console.log(`${passed ? '\x1b[32mlint passed\x1b[0m' : '\x1b[33mlint failed\x1b[0m'}\n`);
+	const passed = errorCount < 1;
+	console.log(`${passed ? '\x1b[32mlint passed\x1b[0m' : '\x1b[31mlint failed, ' + errorCount + ' errors\x1b[0m'}\n`);
 	return passed;
 }
 

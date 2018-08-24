@@ -6,7 +6,7 @@
 	"scripts": {
 		"deploy": "node parse-deploy.js",
 		"lint": "eslint ./cloud_code/cloud --fix",
-		"parse": "parse-server ./parse-dashboard-config.json",
+		"parse": "parse-server ./parse-server-config.json",
 		"dashboard": "parse-dashboard --config ./parse-dashboard-config.json",
 		"mongo": "mongod"
 	}

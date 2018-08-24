@@ -1,10 +1,10 @@
 {
 	"apps": [
 		{
-			"serverURL": "http://localhost:1337/parse",
+			"serverURL": "http://localhost:1337/driskit",
 			"appId": "myAppId",
 			"masterKey": "master",
-			"appName": "MyApp"
+			"appName": "Driskit"
 		}
 	]
 }

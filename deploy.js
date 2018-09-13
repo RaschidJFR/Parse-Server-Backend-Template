@@ -3,7 +3,7 @@
  * [Back4App CLI](https://docs.back4app.com/docs/integrations/command-line-interface/) to upload it to the hosting server.
  */
 
-const PATH = './cloud_code/cloud';
+const PATH = './cloud_code/build/cloud';
 if (lint(PATH))
 	deployToBack4App(PATH);
 else
@@ -50,6 +50,7 @@ function deployToBack4App(filePath) {
 	const fs = require('fs');
 	if (!fs.existsSync(`${filePath}\\..\\public`)) {
 
+		// Create `public` directory if missing
 		var mkdirp = require('mkdirp');
 		mkdirp(`${filePath}\\..\\public`, function (err) {
 			if (err) console.error(err)

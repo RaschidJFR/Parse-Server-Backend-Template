@@ -4,7 +4,7 @@
 			"serverURL": "http://localhost:1337/driskit",
 			"appId": "myAppId",
 			"masterKey": "master",
-			"appName": "Driskit"
+			"appName": "DRiskIt"
 		}
 	]
 }

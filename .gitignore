@@ -40,3 +40,4 @@ logs/
 .parse.local
 .parse.project
 ftp-deploy.js
+build/

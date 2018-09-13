@@ -1,6 +1,4 @@
-/* global require */
-/* global Parse */
-const Countries = require('./countries.js');
+import * as Countries from './countries.js';
 
 /**
  * Returns the available country list as an array of objects with name/code pair.

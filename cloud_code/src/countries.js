@@ -48,8 +48,8 @@ const allCountries = [
 	"China",
 	"Colombia",
 	"Comoros",
-	"Congo (Brazzaville)",
-	"Congo, (Kinshasa)",
+	"Congo",
+	"Congo, the Democratic Republic of the",
 	"Costa Rica",
 	"Croatia",
 	"Cuba",
@@ -235,7 +235,7 @@ const countriesRegion3 = [
 	"Canada",
 	"Israel",
 	"India",
-	"Republic of China"
+	"China"
 ];
 
 const countriesRegion4 = ['United States of America'];

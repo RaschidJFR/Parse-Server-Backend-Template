@@ -1,0 +1,30 @@
+{
+	"compilerOptions": {
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"declaration": false,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"lib": [
+			"dom",
+			"es2015"
+		],
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"sourceMap": false,
+		"target": "es5",
+		"outDir": "cloud_code/build/cloud",
+	},
+	"include": [
+		"cloud_code/src/**/*"
+	],
+	"exclude": [
+		"node_modules",
+		"cloud_code/src/**/*.spec.ts",
+		"cloud_code/src/**/__tests__/*.ts"
+	],
+	"compileOnSave": false,
+	"atom": {
+		"rewriteTsconfig": false
+	},
+}

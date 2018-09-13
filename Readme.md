@@ -1,6 +1,6 @@
 # Parse Server Develop and Deployment#
 
-This repo contains the configuration file and the cloud code files for running on a [Parse Server](https://docs.parseplatform.org/parse-server/guide/).
+This repository contains the configuration file and the cloud code files for running on a [Parse Server](https://docs.parseplatform.org/parse-server/guide/).
 The package is mean tu speed up testing and deployment for when you're working on Parse Server's cloud code.
 
 ## Setup and Prerequisits (global npm packages) ##
@@ -11,7 +11,11 @@ The package is mean tu speed up testing and deployment for when you're working o
 
 ## Run Locally ##
 
-Start mongodb (`mongod.exe`) or mongodb-runner (`mongodb-runner start`). Then use `npm run parse` and `npm run dashboard` to start local Parse Server and Dashboard. Configuration can be set in `parse-server-config.json` and `parse-dashboard-config.json`. 
+1. Start mongodb (`mongod.exe`) or mongodb-runner (`mongodb-runner start`). 
+2. Use `npm run parse` to run the local Parse Server. 
+3. Run `npm run dashboard` to start the Dashboard.  
+
+Configuration can be set in `parse-server-config.json` and `parse-dashboard-config.json`. 
 
 Put your cloud code inside `/cloude_code`. The default needed file is `/cloud_code/cloud/main.js`.
 

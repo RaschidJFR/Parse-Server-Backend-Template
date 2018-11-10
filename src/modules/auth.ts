@@ -35,7 +35,7 @@ export class Auth {
 	/**
 	 * Returns default admin role
 	 */
-	static getAdminRole(): Parse.Role {
+	static getAdminRole(): Parse.IPromise<Parse.Role> {
 		return new Parse.Query(Parse.Role)
 			.equalTo('name', DEFAULT_ADMIN_ROLE)
 			.first({ useMasterKey: true })

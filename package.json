@@ -1,21 +1,27 @@
 {
+	"name": "mayapp-backend",
 	"devDependencies": {
-		"eslint": "^5.3.0",
+		"@types/parse": "^1.11.3",
+		"@types/request": "^2.48.1",
+		"@types/stripe": "^6.0.3",
+		"@types/xml2js": "^0.4.3",
 		"mkdirp": "^0.5.1",
+		"node-flags": "^0.1.9",
+		"node-ssh": "^5.1.2",
 		"tslint": "^5.11.0",
 		"tslint-eslint-rules": "^5.4.0",
 		"typescript": "^3.0.3"
 	},
 	"scripts": {
-		"deploy": "node deploy.js",
-		"parse": "parse-server ./parse-server-config.json",
+		"deploy": "tsc && node deploy",
+		"server": "tsc && parse-server ./parse-server-config.json",
 		"dashboard": "parse-dashboard --config ./parse-dashboard-config.json",
 		"mongo": "mongod",
 		"build": "node node_modules/typescript/bin/tsc",
 		"tsc": "tsc",
-		"lint": "node node_modules/tslint/bin/tslint cloud_code/src/**/*"
+		"lint": "node node_modules/tslint/bin/tslint src/**/*"
 	},
 	"dependencies": {
-		"i18n-iso-countries": "^3.7.7"
+		"mailgun-js": "^0.22.0"
 	}
 }

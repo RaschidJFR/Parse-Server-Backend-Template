@@ -9,7 +9,7 @@ export const DEFAULT_PRICE = 99;
 export const DEFAULT_CURRENCY = 'usd';
 const DESCRIPTION = 'Premium Account';
 
-export class Stripe {
+export class Payment {
 	static chargeCard(token: string, email?: string) {
 		console.log('charging card with token ', token);
 

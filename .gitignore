@@ -39,5 +39,7 @@ UserInterfaceState.xcuserstate
 logs/
 .parse.local
 .parse.project
-ftp-deploy.js
 build/
+
+# Credentials
+ssh-config.json

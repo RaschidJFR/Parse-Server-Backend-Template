@@ -1,19 +1,27 @@
 {
-	"appId": "myAppId",
-	"masterKey": "master",
-	"cloud": "./cloud_code/build/cloud/main.js",
-	"mountPath": "/driskit",
-	"databaseURI": "mongodb://localhost/driskit",
+	"appId": "appkey",
+	"masterKey": "masterkey",
+	"cloud": "./build/cloud/main.js",
+	"mountPath": "/parse",
+	"databaseURI": "mongodb://localhost/parse",
 	"liveQuery": {
-		"classNames": [
-			"Location",
-			"Hint",
-			"Log"
-		]
+		"classNames": []
 	},
 	"startLiveQueryServer": true,
 	"liveQueryServerOptions": {
-		"appId": "myAppId",
-		"masterKey": "master"
+		"appId": "appkey",
+		"masterKey": "masterkey"
+	},
+	"publicServerURL": "http://localhost:1337/parse",
+	"appName": "MyApp",
+	"emailAdapter": {
+		"module": "parse-server-mailgun-adapter-template",
+		"options": {
+			"fromAddress": "postmaster@sandbox0f96fca143fa4e1b9de6d3ac78d75527.mailgun.org",
+			"domain": "sandbox0f96fca143fa4e1b9de6d3ac78d75527.mailgun.org",
+			"apiKey": "***REMOVED***",
+	  
+			"passwordResetBodyHTML": "<p>Hi,</p><p>You've requested a password reset for your username %username%</p><p>Please follow the link: <a href=\"%link%\">%link%</a></p><p>If you have not requested this action you can just ignore this message.</p>"
+		}
 	}
 }

@@ -19,7 +19,7 @@
 		"options": {
 			"fromAddress": "postmaster@sandbox0f96fca143fa4e1b9de6d3ac78d75527.mailgun.org",
 			"domain": "sandbox0f96fca143fa4e1b9de6d3ac78d75527.mailgun.org",
-			"apiKey": "***REMOVED***",
+			"apiKey": "c85c6d408a093f2327e1ca7edc2897ac-bd350f28-0445329c",
 	  
 			"passwordResetBodyHTML": "<p>Hi,</p><p>You've requested a password reset for your username %username%</p><p>Please follow the link: <a href=\"%link%\">%link%</a></p><p>If you have not requested this action you can just ignore this message.</p>"
 		}

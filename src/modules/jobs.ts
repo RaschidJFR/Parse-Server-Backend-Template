@@ -11,7 +11,7 @@ export class Jobs {
 			})
 	}
 
-	static isJobRunning(jobName: string): Parse.IPromise<number> {
+	static isJobRunning(jobName: string): Promise<number> {
 		return new Parse.Query('_JobStatus')
 			.equalTo('jobName', jobName)
 			.equalTo('status', 'running')
@@ -24,14 +24,9 @@ export class Jobs {
 	}
 
 	/**
-	 * Returns a function that writes to consolo.log to JobStatus.message (v2) and request.message (v3)
+	 * Returns a function that writes to consolo.log to request.message (v3)
 	 */
-	static getDefaultLoggingFunction(request: Parse.Cloud.JobRequest, status: Parse.Cloud.JobStatus) {
-		// logging
-		let logFunction;
-		if (status && status.success) logFunction = (m) => { status.message(m); console.log(m); };
-		else logFunction = (m) => { (request as any).message; console.log(m); }
-
-		return logFunction;
+	static getDefaultLoggingFunction(request: Parse.Cloud.JobRequest) {
+		return (m) => { (request as any).message; console.log(m); }
 	}
 }

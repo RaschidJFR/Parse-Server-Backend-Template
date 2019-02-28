@@ -5,6 +5,8 @@
 			"appId": "appkey",
 			"masterKey": "masterkey",
 			"appName": "MyApp"
+			"iconName": null
 		}
-	]
+	],
+	"iconsFolder": null
 }

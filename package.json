@@ -3,6 +3,7 @@
 	"devDependencies": {
 		"@types/parse": "^2.1.1",
 		"@types/request": "^2.48.1",
+		"@types/stripe": "^6.19.8",
 		"@types/xml2js": "^0.4.3",
 		"mkdirp": "^0.5.1",
 		"node-flags": "^0.1.9",

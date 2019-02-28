@@ -1,14 +1,11 @@
-// Default Credentials for Admin
-export const DEFAULT_ADMIN_ROLE = 'Admin';
-export const DEFAULT_ADMIN_USERNAME = 'admin';
-export const DEFAULT_ADMIN_PASSWORD = 'admin';
+import { DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD } from "./auth";
 
 export class Setup {
 
 	/**
 	 * Delete all objects an classes on the database
 	 */
-	static deleteDatabase(): Promise<string> {
+	static resetDatabase(): Promise<string> {
 		let log = '';
 		console.warn('deleting database...');
 		log += 'deleting database...\n';
@@ -19,8 +16,8 @@ export class Setup {
 				console.log('got schemas');
 				allSchemas = results;
 
-				//  Purge all classes
-				let getAllObjects: Parse.Promise<Parse.Object[]>[] = [];
+				// Find all objetcs from all classes
+				let getAllObjects: Promise<Parse.Object[]>[] = [];
 				allSchemas.forEach(schema => {
 					let className = schema.className as string;
 					let query = new Parse.Query(className)
@@ -35,6 +32,7 @@ export class Setup {
 			})
 			.then(results => {
 
+				// Destroy all objects
 				let allObjects: Parse.Object[] = [];
 				results.forEach((array: Parse.Object[]) => {
 					log += array.length > 0 ? array[0].className + ': ' + array.length + '\n' : '\n';
@@ -48,12 +46,12 @@ export class Setup {
 				log += 'all classes purged\n';
 
 				let deleteAllSchemas: Promise<any>[] = [];
-				// allSchemas.forEach(schema => {
+				allSchemas.forEach(schema => {
 
-				// 	// Don't delete default classes
-				// 	if (!(schema.className as string).includes('_'))
-				// 		deleteAllSchemas.push(schema.delete({ userMasterKey: true }));
-				// });
+					// Don't delete default classes
+					if (!(schema.className as string).includes('_'))
+						deleteAllSchemas.push(schema.delete({ userMasterKey: true }));
+				});
 
 				return Promise.all(deleteAllSchemas);
 			})
@@ -61,14 +59,14 @@ export class Setup {
 				console.warn('database has been deleted');
 				log += 'database deleted\n';
 				return log;
-			})
+			});
 	}
 
 	/**
 	 * Creates all needed schemas and default values for this application
 	 * on the database.
 	 */
-	static initDatabase(): Parse.IPromise<string> {
+	static initDatabase(): Promise<string> {
 		let log = '';
 		let errors = [];
 		return this.createAdminUser()
@@ -80,13 +78,11 @@ export class Setup {
 			})
 			.then(user => {
 				log += 'Admin user created\n';
-				this.createAdminRole(user);
+				return this.createAdminRole(user);
 			})
-			.catch(error => {
-				console.error(error);
-				errors.push((error as any).message);
-				log += 'error: ' + (error as any).message + '\n';
-				return null;
+			.then(() => {
+				log += 'Creating schemas\n'
+				return this.createSchemas();
 			})
 			.catch(error => {
 				console.error(error);
@@ -102,7 +98,7 @@ export class Setup {
 			});
 	}
 
-	static createAdminRole(user: Parse.User) {
+	protected static createAdminRole(user: Parse.User) {
 		console.log('create admin role');
 
 		let acl = new Parse.ACL();
@@ -114,7 +110,7 @@ export class Setup {
 		return role.save(undefined, { useMasterKey: true });
 	}
 
-	static createAdminUser(): Parse.Promise<Parse.User> {
+	protected static createAdminUser(): Promise<Parse.User> {
 		console.log('create admin user');
 
 		let admin = new Parse.User();
@@ -127,21 +123,24 @@ export class Setup {
 			});
 	}
 
-
 	/**
-	 * Defines cloud functions for setup
+	 * Override this class to setup your custom schemas
 	 */
+	protected static createSchemas(): Promise<any> {
+		return Promise.resolve();
+	}
+
 	static initCloudFunctions() {
 		/**
-		 * Delete all objects and classes in database
+		 * Delete and setup all objects and classes in database
 		 */
-		Parse.Cloud.define('deleteDatabase', (request) => {
+		Parse.Cloud.define('resetDatabase', (request) => {
 			if (!request.master) {
 				throw ('unahtorized');
 			}
 
 			let log = '';
-			return Setup.deleteDatabase()
+			return Setup.resetDatabase()
 				.then(resultLog => {
 					log += resultLog;
 					return Setup.initDatabase();

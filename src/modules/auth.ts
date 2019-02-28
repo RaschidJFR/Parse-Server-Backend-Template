@@ -1,4 +1,7 @@
-import { DEFAULT_ADMIN_ROLE } from "./setup";
+// Default Credentials for Admin
+export const DEFAULT_ADMIN_ROLE = 'Admin';
+export const DEFAULT_ADMIN_USERNAME = 'admin';
+export const DEFAULT_ADMIN_PASSWORD = 'admin';
 
 export class Auth {
 
@@ -35,7 +38,7 @@ export class Auth {
 	/**
 	 * Returns default admin role
 	 */
-	static getAdminRole(): Parse.IPromise<Parse.Role> {
+	static getAdminRole(): Promise<Parse.Role> {
 		return new Parse.Query(Parse.Role)
 			.equalTo('name', DEFAULT_ADMIN_ROLE)
 			.first({ useMasterKey: true })

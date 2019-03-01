@@ -33,8 +33,17 @@ Put your **cloud code** inside `/build`. The default needed file is `/build/clou
 ### Deploy to [Back4App](https://back4app.com) ###
 
 1. Make sure you've installed the [Back4App CLI](https://blog.back4app.com/2017/01/20/cli-parse-server/).
-2. Follow the instructions to [link your local back4app project](https://www.back4app.com/docs/command-line-tool/connect-to-back4app).
+2. Follow the instructions to [link your local back4app project](https://www.back4app.com/docs/command-line-tool/connect-to-back4app)* inside the output folder `build`.
 3. Run `npm run deploy -- --b4a` to deploy your cloud code to your server on a [Back4App](https://back4app.com) account. The project will be compiled and uploaded immediatly.
+
+*If you've already created a project on Back4App you can run the series of commands from the project root folder:
+
+```
+$ b4a new
+  > e
+  > [your project number]
+  > build
+```
 
 ### Deploy to a VM via SSH ###
 

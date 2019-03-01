@@ -46,12 +46,13 @@ export class Setup {
 				log += 'all classes purged\n';
 
 				let deleteAllSchemas: Promise<any>[] = [];
-				allSchemas.forEach(schema => {
 
-					// Don't delete default classes
-					if (!(schema.className as string).includes('_'))
-						deleteAllSchemas.push(schema.delete({ userMasterKey: true }));
-				});
+				// allSchemas.forEach(schema => {
+
+				// 	// Don't delete default classes
+				// 	if (!(schema.className as string).includes('_'))
+				// 		deleteAllSchemas.push(schema.delete({ userMasterKey: true }));
+				// });
 
 				return Promise.all(deleteAllSchemas);
 			})

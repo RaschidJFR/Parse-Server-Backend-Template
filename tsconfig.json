@@ -13,8 +13,13 @@
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"sourceMap": false,
-		"target": "es5",
+		"target": "es6",
 		"outDir": "build/cloud",
+		"paths": {
+			"@app/env": [
+				"src/env/env.prod.js"
+			],
+		}
 	},
 	"include": [
 		"src/**/*"

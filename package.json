@@ -22,6 +22,10 @@
 		"lint": "node node_modules/tslint/bin/tslint src/**/*"
 	},
 	"dependencies": {
-		"mailgun-js": "^0.22.0"
+		"mailgun-js": "^0.22.0",
+		"module-alias": "^2.2.0"
+	},
+	"_moduleAliases": {
+		"@app/env": "build/cloud/env/env.prod.js"
 	}
 }

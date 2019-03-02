@@ -131,14 +131,11 @@ export class Setup {
 		return Promise.resolve();
 	}
 
-	static initCloudFunctions() {
+	static initCloudJobs() {
 		/**
 		 * Delete and setup all objects and classes in database
 		 */
-		Parse.Cloud.define('resetDatabase', (request) => {
-			if (!request.master) {
-				throw ('unahtorized');
-			}
+		Parse.Cloud.job('blankDatabase', (request) => {
 
 			let log = '';
 			return Setup.resetDatabase()
@@ -148,17 +145,8 @@ export class Setup {
 				})
 				.then(resultLog => {
 					log += resultLog;
-					return { success: true, details: log };
+					request.message(log);
 				});
-		});
-
-		/**
-		 * Create default objects
-		 */
-		Parse.Cloud.define('setupDatabase', (request) => {
-			if (!request.master) throw ('unahtorized');
-
-			return Setup.initDatabase();
 		});
 	}
 }

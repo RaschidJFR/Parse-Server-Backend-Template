@@ -19,6 +19,12 @@
 			"@app/env": [
 				"src/env/env.prod.js"
 			],
+			"@library/*": [
+				"src/library/*"
+			],
+			"@parse": [
+				"src/library/parse.server"
+			]
 		}
 	},
 	"include": [

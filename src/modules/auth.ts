@@ -65,6 +65,35 @@ export class Auth {
 	}
 
 	/**
+	 * Read access only for Admin.
+	 */
+	static getReservedACL(): Parse.ACL {
+		let acl = new Parse.ACL();
+		acl.setRoleReadAccess(DEFAULT_ADMIN_ROLE, true);
+		return acl;
+	}
+
+	/**
+	 * Read/Write access for the owner and Read access for public.
+	 */
+	static getPublicReadACL(owner: Parse.User | Parse.Object): Parse.ACL {
+
+		if (owner instanceof Parse.User) {
+			let acl = new Parse.ACL(owner);
+			acl.setPublicReadAccess(true);
+			return acl;
+
+		} else if (owner instanceof Parse.Object) {
+			let user = owner.get('user');
+			if (!user) throw 'No owner found';
+
+			let acl = new Parse.ACL(user);
+			acl.setPublicReadAccess(true);
+			return acl;
+		}
+	}
+
+	/**
 	 * Defines cloud functions for auth module
 	 */
 	static initCloudFunctions() {

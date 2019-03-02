@@ -26,6 +26,8 @@
 		"module-alias": "^2.2.0"
 	},
 	"_moduleAliases": {
-		"@app/env": "build/cloud/env/env.prod.js"
+		"@app/env": "build/cloud/env/env.prod",
+		"@library": "build/cloud/library",
+		"@parse": "build/cloud/library/parse.server"
 	}
 }

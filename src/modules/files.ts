@@ -50,7 +50,12 @@ export class Files {
 				'X-Parse-Application-Id': Parse.applicationId,
 				'X-Parse-Master-Key': Parse.masterKey,
 			}
-		}).then(() => null);
+		})
+			.then(() => null)
+			.catch(error => {
+				console.error(error);
+				return null;
+			});
 	}
 
 	/**

@@ -57,3 +57,55 @@ $ b4a new
 ### Deploy to a VM via SSH ###
 
 To deploy your cloud code to your server on a VM run `$ npm run deploy -- --ssh`.
+
+
+## Example: How to setup a and call a cloud function ##
+
+Once you've got the local server up and running, add this code in `main.ts`:
+
+```
+Parse.Cloud.define('test', request => {
+	const params = request.params;
+
+	const result = {
+		status: 'success',
+		message: 'Hi, the test was successful!',
+		receivedParams: params
+	}
+
+	return result;
+});
+```
+
+Add this somewhere in the client to init the SDK:
+
+```
+// Imports
+import * as Parse from 'parse';                   	// Don't forget to `$ npm i parse` and `$ npm i -D @types/parse`
+
+// Credentials
+const PARSE_APP_ID = 'yourAppId';					// <- Use this value from the server's `parse-server.config.json`
+const PARSE_JS_API_KEY = 'yourMasterKey';			// <- Use this value from the server's `parse-server.config.json`
+const PARSE_SERVER_URL = 'localhost:1337/parse';	// <- Use this value from the server's `parse-server.config.json`
+
+// Init SDK
+Parse.initialize(PARSE_APP_ID, PARSE_JS_API_KEY);
+const parse = require('parse');						// For some reason this line is required
+parse.serverURL = PARSE_SERVER_URL;
+
+```
+
+Use this code to call the function and get the deadline result from the server:
+
+```
+const params = {
+	title: 'Test',
+	message: 'Hi... is this working?' 
+}
+
+Parse.Cloude.run('test', params).then(response => {
+	console.log(response);
+})
+```
+
+For more information see the [Cloud Code Guide](https://docs.parseplatform.org/cloudcode/guide/).

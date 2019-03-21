@@ -105,4 +105,26 @@ export class Auth {
 			return Auth.getIsAdmin(request.user);
 		});
 	}
+
+	static async isUserInRole(user: Parse.User, role: Parse.Role): Promise<boolean> {
+		let isInRole = false;
+		return role.getUsers().query().equalTo('objectId', user.id).first({ useMasterKey: true })
+			.then(found => {
+				if (found) {
+					return true;
+				} else {
+					return role.getRoles().query().find({ useMasterKey: true })
+						.then(async (roles) => {
+
+							for (let i = 0; i < roles.length; i++) {
+								const role = roles[i];
+								isInRole = await this.isUserInRole(user, role);
+								if (isInRole) break;
+							}
+
+							return isInRole;
+						});
+				}
+			});
+	}
 }

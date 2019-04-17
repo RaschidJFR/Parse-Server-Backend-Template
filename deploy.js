@@ -1,10 +1,11 @@
 const BUILD_PATH = './build/cloud';
+const DATA_PUBLIC_PATH = './data-public';
 
 const flags = require('node-flags');
 const toB4A = flags.get('b4a');
 const toSSH = flags.get('ssh');
 
-if(!toB4A && !toSSH)
+if (!toB4A && !toSSH)
 	throw ('Please choose an option to deploy to: `--b4a` or `--ssh`\n');
 
 copyPackageDotJson();
@@ -61,28 +62,33 @@ function deployToBack4App(filePath) {
 		var mkdirp = require('mkdirp');
 		mkdirp(publicPath, function (err) {
 			if (err) console.error(err)
-			else console.log(`Created missing directory ${publicPath}`)
+			else console.log(`Created needed directory ${publicPath}`)
 		});
 	}
 
-	// Upload using b4a.exe
-	const { spawn } = require('child_process');
-	const command = `b4a.exe`
-	const args = `deploy`.split(' ');
+	// Copy content from `data-public`
+	copyDataPublicContent(DATA_PUBLIC_PATH, publicPath, () => {
 
-	console.log(`\x1b[32m> ${command} ${args.join(' ')}\x1b[0m`);
-	let child = spawn(command, args, { cwd: execPAth });
+		// Upload using b4a.exe
+		const { spawn } = require('child_process');
+		const command = `b4a`
+		const args = `deploy`.split(' ');
 
-	child.stdout.on('data', (data) => {
-		console.log(`${data}`);
-	});
+		console.log(`\x1b[32m> ${command} ${args.join(' ')}\x1b[0m`);
+		let child = spawn(command, args, { cwd: execPAth });
 
-	child.stderr.on('data', (data) => {
-		console.log(`\x1b[31m${data}\x1b[0m`);
-	});
+		child.stdout.on('data', (data) => {
+			console.log(`${data}`);
+		});
 
-	child.on('close', (code) => {
-		console.log(`\x1b[32mDone!: ${code}\x1b[0m\n`);
+		child.stderr.on('data', (data) => {
+			console.log(`\x1b[31m${data}\x1b[0m`);
+		});
+
+		child.on('close', (code) => {
+			console.log(`\x1b[32mDone!: ${code}\x1b[0m\n`);
+		});
+
 	});
 }
 
@@ -149,6 +155,25 @@ function deployToSSH(localPath) {
 			console.log('\x1b[31mfailed: %s\x1b[0m', error);
 			process.exit();
 		});
+}
+
+function copyDataPublicContent(source, destination, callback) {
+	const fs = require('fs');
+	if (!fs.existsSync(source)) {
+		callback();
+	}
+
+	console.log('copying %o to %o', 'data-public', destination);
+	const ncp = require('ncp').ncp;
+	ncp.limit = 1;
+
+	ncp(source, destination, function (err) {
+		if (err) {
+			return console.error(err);
+		}
+		console.log('done');
+		callback();
+	});
 }
 
 function copyPackageDotJson() {

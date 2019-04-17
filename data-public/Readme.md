@@ -1,0 +1,1 @@
+This folder emulates the path `public-data` on the production server on the [back4App](https://back4app.com) account. It is needed on the project root while running the dev server locally but its content should be copied into the output folder `build/public` before deploying (`$ npm run deploy`) so it uploads and becomes accessible to the cloud server.

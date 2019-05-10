@@ -1,11 +1,76 @@
 {
-  "rules": {
-    "no-duplicate-variable": true,
-    "no-unused-variable": [
-      true
-    ]
-  },
   "rulesDirectory": [
     "node_modules/tslint-eslint-rules/dist/rules"
-  ]
+  ],
+  "rules": {
+    "align": [
+      true,
+      "statements"
+    ],
+    "array-type": [
+      true,
+      "array"
+    ],
+    "deprecation": {
+      "severity": "warn"
+    },
+    "import-blacklist": [
+      true,
+      "rxjs/Rx"
+    ],
+    "indent": [
+      true,
+      "tabs",
+      2
+    ],
+    "max-line-length": {
+      "severity": "warning",
+      "options": [
+        140
+      ]
+    },
+    "member-ordering": [
+      true,
+      {
+        "order": [
+          "instance-sandwich"
+        ]
+      }
+    ],
+    "no-inferrable-types": [
+      true,
+      "ignore-params"
+    ],
+    "no-non-null-assertion": true,
+    "no-redundant-jsdoc": true,
+    "no-use-before-declare": true,
+    "object-literal-key-quotes": [
+      true,
+      "as-needed"
+    ],
+    "quotemark": [
+      true,
+      "single"
+    ],
+    "no-output-on-prefix": true,
+    "variable-name": {
+      "severity": "warning",
+      "options": [
+        "ban-keywords",
+        "check-format",
+        "allow-leading-underscore",
+        "allow-snake-case",
+        "allow-pascal-case"
+      ]
+    },
+    "use-input-property-decorator": true,
+    "use-output-property-decorator": true,
+    "use-host-property-decorator": true,
+    "no-input-rename": true,
+    "no-output-rename": true,
+    "use-life-cycle-interface": true,
+    "use-pipe-transform-interface": true,
+    "component-class-suffix": true,
+    "directive-class-suffix": true
+  }
 }

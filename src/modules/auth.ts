@@ -1,14 +1,37 @@
 // Default Credentials for Admin
-export const DEFAULT_ADMIN_ROLE = 'Admin';
+export const DEFAULT_ADMIN_ROLE = 'SuperUser';
 export const DEFAULT_ADMIN_USERNAME = 'admin';
 export const DEFAULT_ADMIN_PASSWORD = 'admin';
 
 export class Auth {
 
+	static async createSuperUser(): Promise<Parse.User> {
+		console.log('create super user');
+
+		// Create user
+		const user = await new Parse.User()
+			.save({
+				username: DEFAULT_ADMIN_USERNAME,
+				password: DEFAULT_ADMIN_PASSWORD
+			}, { useMasterKey: true });
+
+
+		// Create SuperUser role
+		let acl = new Parse.ACL();
+		acl.setPublicWriteAccess(false);
+		acl.setPublicReadAccess(true);
+
+		let role = new Parse.Role(DEFAULT_ADMIN_ROLE, acl);
+		role.getUsers().add(user)
+		await role.save(undefined, { useMasterKey: true });
+
+		return user;
+	}
+
 	/**
 	 * Checks if a user is in the default admin role
-	 * @param username
-	 * @returns true if user is found on the default admin role
+	 * @returns `true` if user is found on the default admin role
+	 * @deprecated Use `isUserInRole()` instead
 	 */
 	static getIsAdmin(user: Parse.User): Promise<boolean> {
 		if (!user) return Promise.resolve(false);
@@ -94,37 +117,63 @@ export class Auth {
 	}
 
 	/**
-	 * Defines cloud functions for auth module
+	 * Search recursively a user in a Role
+	 * @param depth Number of nested queries to go into. Default = `2`
 	 */
-	static initCloudFunctions() {
-		/**
-		 * Checks whether requesting user in the DRiskIt role or note.
-		 * @returns {boolean}
-		 */
-		Parse.Cloud.define('amAdmin', (request) => {
-			return Auth.getIsAdmin(request.user);
-		});
+	static async isUserInRole(user: Parse.User, role: Parse.Role, depth = 2): Promise<boolean> {
+		if (!user) return false;
+
+		let isInRole = false;
+		const found = await role.getUsers()
+			.query()
+			.equalTo('objectId', user.id)
+			.first({ useMasterKey: true })
+
+		if (found) {
+			return true;
+		} else {
+			const roles = await role.getRoles().query().find({ useMasterKey: true });
+			for (let i = 0; i < roles.length && i < depth; i++) {
+				const role = roles[i];
+				isInRole = await this.isUserInRole(user, role, depth - 1);
+				if (isInRole) break;
+			}
+
+			return isInRole;
+		}
 	}
 
-	static async isUserInRole(user: Parse.User, role: Parse.Role): Promise<boolean> {
-		let isInRole = false;
-		return role.getUsers().query().equalTo('objectId', user.id).first({ useMasterKey: true })
-			.then(found => {
-				if (found) {
-					return true;
-				} else {
-					return role.getRoles().query().find({ useMasterKey: true })
-						.then(async (roles) => {
+	/**
+	 * Inits cloud functions for auth module
+	 */
+	static initCloudFunctions() {
 
-							for (let i = 0; i < roles.length; i++) {
-								const role = roles[i];
-								isInRole = await this.isUserInRole(user, role);
-								if (isInRole) break;
-							}
+		/**
+		 * Checks whether requesting user in the default role.
+		 */
+		Parse.Cloud.define('amAdmin', async (request) => {
+			const user = request.user;
+			const role = await this.getAdminRole();
+			const result: boolean = await Auth.isUserInRole(user, role);
+			return result;
+		});
 
-							return isInRole;
-						});
-				}
-			});
+		/**
+		 * Search recursively a user in a Role
+		 * @param depth Number of nested queries to go into. Default = `2`
+		 * @returns `boolean`
+	   */
+		Parse.Cloud.define('role:hasUser', request => {
+			const params: {
+				user: Parse.Pointer,
+				role: Parse.Pointer,
+				depth?: number
+			} = request.params;
+
+			const user = Parse.User.createWithoutData<Parse.User>(params.user.objectId);
+			const role = Parse.Role.createWithoutData<Parse.Role>(params.role.objectId);
+
+			return Auth.isUserInRole(user, role, params.depth)
+		})
 	}
 }

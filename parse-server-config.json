@@ -23,5 +23,7 @@
 	  
 			"passwordResetBodyHTML": "<p>Hi,</p><p>You've requested a password reset for your username %username%</p><p>Please follow the link: <a href=\"%link%\">%link%</a></p><p>If you have not requested this action you can just ignore this message.</p>"
 		}
-	}
+	},
+	"verbose": true,
+	"jsonLogs": false
 }

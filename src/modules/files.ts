@@ -9,8 +9,8 @@ export class Files {
 	 * @param key Field that contains the array of files
 	 * @returns Removed file count
 	 */
-	static removeUnlinkedFiles(originalObject: Parse.Object, newObject: Parse.Object, key: string) {
-		if (!originalObject) return Promise.resolve();
+	static removeUnlinkedFiles(originalObject: Parse.Object, newObject: Parse.Object, key: string): Promise<number> {
+		if (!originalObject) return Promise.resolve(0);
 
 		return Parse.Object.fetchAll([originalObject, newObject], { useMasterKey: true })
 			.then(() => {
@@ -36,26 +36,32 @@ export class Files {
 			.then((results) => results.length);
 	}
 
-	/**
+/**
 	 * Deletes a physical file from Parse Server.
 	 */
-	static deleteFile(file: Parse.File): Promise<void> {
+	static async deleteFile(file: Parse.File, ignoreError = false): Promise<void> {
 		const url = file && file.url && file.url().replace(`${Parse.applicationId}/`, '');
-		console.log('delete %s', url);
+		console.log('delete %o', url);
+		if(!url) return null;
 
-		return Parse.Cloud.httpRequest({
-			url: url,
-			method: 'DELETE',
-			headers: {
-				'X-Parse-Application-Id': Parse.applicationId,
-				'X-Parse-Master-Key': Parse.masterKey,
-			}
-		})
-			.then(() => null)
-			.catch(error => {
-				console.error(error);
-				return null;
+		try {
+			await Parse.Cloud.httpRequest({
+				url: url,
+				method: 'DELETE',
+				headers: {
+					'X-Parse-Application-Id': Parse.applicationId,
+					'X-Parse-Master-Key': Parse.masterKey,
+				}
 			});
+
+		} catch (e) {
+			const error = e as Parse.Cloud.HttpResponse;
+			if (!ignoreError) {
+				throw new Error(error.text);
+			} else {
+				console.error('Error on deleting file %o:\n%o', url, error.text);
+			}
+		};
 	}
 
 	/**

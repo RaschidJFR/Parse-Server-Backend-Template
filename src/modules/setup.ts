@@ -1,4 +1,4 @@
-import { DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD } from "./auth";
+import { Auth } from "./auth";
 
 export class Setup {
 
@@ -70,16 +70,12 @@ export class Setup {
 	static initDatabase(): Promise<string> {
 		let log = '';
 		let errors = [];
-		return this.createAdminUser()
+		return Auth.createSuperUser()
 			.catch(error => {
 				console.error(error);
 				log += 'error: ' + (error as any).message + '\n';
 				errors.push((error as any).message);
 				return null;
-			})
-			.then(user => {
-				log += 'Admin user created\n';
-				return this.createAdminRole(user);
 			})
 			.then(() => {
 				log += 'Creating schemas\n'
@@ -99,30 +95,6 @@ export class Setup {
 			});
 	}
 
-	protected static createAdminRole(user: Parse.User) {
-		console.log('create admin role');
-
-		let acl = new Parse.ACL();
-		acl.setPublicWriteAccess(false);
-		acl.setPublicReadAccess(true);
-
-		let role = new Parse.Role(DEFAULT_ADMIN_ROLE, acl);
-		role.getUsers().add(user)
-		return role.save(undefined, { useMasterKey: true });
-	}
-
-	protected static createAdminUser(): Promise<Parse.User> {
-		console.log('create admin user');
-
-		let admin = new Parse.User();
-
-		return admin.save({
-			username: DEFAULT_ADMIN_USERNAME,
-			password: DEFAULT_ADMIN_PASSWORD
-		}, {
-				useMasterKey: true
-			});
-	}
 
 	/**
 	 * Override this class to setup your custom schemas

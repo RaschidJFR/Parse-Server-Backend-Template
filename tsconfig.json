@@ -22,6 +22,9 @@
 			"@library/*": [
 				"src/library/*"
 			],
+			"@modules/*": [
+				"src/modules/*"
+			],
 			"@parse": [
 				"src/library/parse.server"
 			]

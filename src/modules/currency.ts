@@ -28,7 +28,7 @@ export class Currency {
 						}
 
 						// Extract all availble Euro rates in XML
-						this.rates = { 'EUR': 1 };
+						this.rates = { EUR: 1 };
 						try {
 							// According to thie specific XML's structure
 							const dataArr = result['gesmes:Envelope']['Cube'][0]['Cube'][0]['Cube'];

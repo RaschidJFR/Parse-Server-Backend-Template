@@ -9,7 +9,7 @@
 		"ncp": "^2.0.0",
 		"node-flags": "^0.1.9",
 		"node-ssh": "^5.1.2",
-		"tslint": "^5.11.0",
+		"tslint": "^5.16.0",
 		"tslint-eslint-rules": "^5.4.0",
 		"typescript": "^3.0.3"
 	},

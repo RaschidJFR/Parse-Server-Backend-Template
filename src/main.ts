@@ -2,14 +2,13 @@ require('module-alias/register');
 
 // Uncomment the modules you need and init them as required
 
-// import { Auth } from "./modules/auth";
+// import { Currency } from '@modules/currency';
+
+// import { Auth } from '@modules/auth';
 // Auth.initCloudFunctions();
 
-// import { Currency } from "./modules/currency";
-// Currency.initCloudFunctions();
+// import { Setup } from '@modules/setup';
+// Setup.initDatabase({ username: 'admin', password: 'admin' });
 
-// import { Setup } from "./modules/setup";
-// Setup.initCloudFunctions();
-
-// import { Stripe } from "./modules/stripe";
-// Stripe.initCloudFunctions();
+// import { Payment } from '@modules/stripe';
+// Payment.initCloudFunctions();

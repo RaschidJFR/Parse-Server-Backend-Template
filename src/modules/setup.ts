@@ -67,32 +67,32 @@ export class Setup {
 	 * Creates all needed schemas and default values for this application
 	 * on the database.
 	 */
-	static initDatabase(): Promise<string> {
+	static async initDatabase(defaultSuperuserCredentials?: { username: string, password: string }): Promise<string> {
 		let log = '';
 		let errors = [];
-		return Auth.createSuperUser()
+
+		if (defaultSuperuserCredentials) await Auth.createSuperUser(defaultSuperuserCredentials)
 			.catch(error => {
 				console.error(error);
 				log += 'error: ' + (error as any).message + '\n';
 				errors.push((error as any).message);
 				return null;
 			})
-			.then(() => {
-				log += 'Creating schemas\n'
-				return this.createSchemas();
-			})
+
+
+		log += 'Creating schemas\n'
+		await this.createSchemas()
 			.catch(error => {
 				console.error(error);
 				errors.push((error as any).message);
 				log += 'error: ' + (error as any).message + '\n';
 				return null;
 			})
-			.then(() => {
-				if (errors.length > 0)
-					throw (log);
-				else
-					return log;
-			});
+
+		if (errors.length > 0)
+			throw (log);
+		else
+			return log;
 	}
 
 
@@ -103,7 +103,10 @@ export class Setup {
 		return Promise.resolve();
 	}
 
-	static initCloudJobs() {
+	/**
+	 * @param superuser If provided, a superuser will be created
+	 */
+	static initCloudJobs(superuser?: { username: string, password: string }) {
 		/**
 		 * Delete and setup all objects and classes in database
 		 */
@@ -113,7 +116,7 @@ export class Setup {
 			return Setup.resetDatabase()
 				.then(resultLog => {
 					log += resultLog;
-					return Setup.initDatabase();
+					return Setup.initDatabase(superuser);
 				})
 				.then(resultLog => {
 					log += resultLog;

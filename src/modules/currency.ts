@@ -101,6 +101,3 @@ export class Currency {
 		return TOEUR / FROMEUR;
 	}
 }
-
-// Load currenci
-Currency.getCurrencyRates();

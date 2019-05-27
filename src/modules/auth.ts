@@ -1,18 +1,16 @@
 // Default Credentials for Admin
 export const DEFAULT_ADMIN_ROLE = 'SuperUser';
-export const DEFAULT_ADMIN_USERNAME = 'admin';
-export const DEFAULT_ADMIN_PASSWORD = 'admin';
 
 export class Auth {
 
-	static async createSuperUser(): Promise<Parse.User> {
+	static async createSuperUser(credentials: { username: string, password: string }): Promise<Parse.User> {
 		console.log('create super user');
 
 		// Create user
 		const user = await new Parse.User()
 			.save({
-				username: DEFAULT_ADMIN_USERNAME,
-				password: DEFAULT_ADMIN_PASSWORD
+				username: credentials.username,
+				password: credentials.password
 			}, { useMasterKey: true });
 
 

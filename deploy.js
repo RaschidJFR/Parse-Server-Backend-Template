@@ -192,7 +192,7 @@ function copyPackageDotJson() {
 			aliasPath = aliasPath.replace(BUILD_PATH.replace('./', ''), '');
 			aliasPath = aliasPath.indexOf('/') == 0 ? aliasPath.slice(1) : aliasPath;
 
-			console.log('psackage.json: Rewriting alias %o => %o\n', moduleAlias[k], aliasPath);
+			console.log('psackage.json: Rewriting alias %o => %o', moduleAlias[k], aliasPath);
 			moduleAlias[k] = aliasPath;
 		});
 	}

@@ -17,7 +17,7 @@
 		"outDir": "build/cloud",
 		"paths": {
 			"@app/env": [
-				"src/env/env.prod.js"
+				"src/env/env"
 			],
 			"@library/*": [
 				"src/library/*"

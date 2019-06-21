@@ -1,3 +1,4 @@
 export const ENV = {
-	isServer: true
+	debug: false,
+	isServer: true,
 };

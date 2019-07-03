@@ -1,36 +1,40 @@
 {
-	"name": "mayapp-backend",
-	"devDependencies": {
-		"@types/parse": "^2.2.4",
-		"@types/request": "^2.48.1",
-		"@types/stripe": "^6.19.8",
-		"@types/xml2js": "^0.4.3",
-		"mkdirp": "^0.5.1",
-		"ncp": "^2.0.0",
-		"node-flags": "^0.1.9",
-		"node-ssh": "^5.1.2",
-		"tslint": "^5.16.0",
-		"tslint-eslint-rules": "^5.4.0",
-		"typescript": "^3.0.3"
-	},
-	"scripts": {
-		"deploy": "tsc && node deploy",
-		"server": "tsc && parse-server ./parse-server-config.json",
-		"dashboard": "parse-dashboard --config ./parse-dashboard-config.json",
-		"mongo": "mongod",
-		"build": "node node_modules/typescript/bin/tsc",
-		"tsc": "tsc",
-		"lint": "node node_modules/tslint/bin/tslint src/**/*"
-	},
-	"dependencies": {
-		"i18n-iso-countries": "^4.0.0",
-		"mailgun-js": "^0.22.0",
-		"module-alias": "^2.2.0"
-	},
-	"_moduleAliases": {
-		"@app/env": "build/cloud/env/env.prod",
-		"@library": "build/cloud/library",
-		"@modules": "build/cloud/modules",
-		"@parse": "build/cloud/library/parse.server"
-	}
+  "name": "mayapp-backend",
+  "devDependencies": {
+    "@types/parse": "^2.2.4",
+    "@types/request": "^2.48.1",
+    "@types/stripe": "^6.19.8",
+    "@types/xml2js": "^0.4.3",
+    "mkdirp": "^0.5.1",
+    "ncp": "^2.0.0",
+    "node-flags": "^0.1.9",
+    "node-ssh": "^5.1.2",
+    "tslint": "^5.16.0",
+    "tslint-eslint-rules": "^5.4.0",
+    "typescript": "^3.0.3"
+  },
+  "scripts": {
+    "deploy": "tsc && node deploy",
+    "server": "tsc && parse-server ./parse-server-config.json",
+    "dashboard": "parse-dashboard --config ./parse-dashboard-config.json",
+    "mongo": "mongod",
+    "build": "node node_modules/typescript/bin/tsc",
+    "tsc": "tsc",
+    "lint": "node node_modules/tslint/bin/tslint src/**/*",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
+  },
+  "dependencies": {
+    "i18n-iso-countries": "^4.0.0",
+    "mailgun-js": "^0.22.0",
+    "module-alias": "^2.2.0",
+    "snyk": "^1.189.0"
+  },
+  "_moduleAliases": {
+    "@app/env": "build/cloud/env/env.prod",
+    "@library": "build/cloud/library",
+    "@modules": "build/cloud/modules",
+    "@parse": "build/cloud/library/parse.server"
+  },
+  "snyk": true
 }

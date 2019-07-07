@@ -1,5 +1,5 @@
 const BUILD_PATH = './build/cloud';
-const DATA_PUBLIC_PATH = './data-public';
+const DATA_PUBLIC_PATH = './assets';
 
 const flags = require('node-flags');
 const toB4A = flags.get('b4a');
@@ -15,38 +15,6 @@ if (toB4A)
 else if (toSSH)
 	deployToSSH(BUILD_PATH);
 
-
-function eslint(path) {
-
-	const CLIEngine = require("eslint").CLIEngine;
-	const cli = new CLIEngine();
-
-	// lint myfile.js and all files in lib/
-	let errorCount = 0;
-	const report = cli.executeOnFiles([path]);
-	report.results.forEach(file => {
-		if (!file.filePath.includes('node_modules')) {
-			console.log(`${file.filePath}`);
-
-			file.messages.forEach(message => {
-
-				const line = message.line;
-				const col = message.column;
-				const severity = message.severity > 1 ? '\x1b[31merror\x1b[0m' : '\x1b[33mwarning\x1b[0m';
-				const msg = message.message;
-				const rule = message.ruleId;
-
-				console.log(`${line}:${col}\t${severity}\t${msg}\t${rule}\t${file.filePath}:${line}:${col}`);
-				errorCount += severity > 1 ? 1 : 0;
-			});
-		}
-
-	});
-
-	const passed = errorCount < 1;
-	console.log(`${passed ? '\x1b[32mlint passed\x1b[0m' : '\x1b[31mlint failed, ' + errorCount + ' errors\x1b[0m'}\n`);
-	return passed;
-}
 
 function deployToBack4App(filePath) {
 
@@ -66,7 +34,7 @@ function deployToBack4App(filePath) {
 		});
 	}
 
-	// Copy content from `data-public`
+	// Copy content from `assets`
 	copyDataPublicContent(DATA_PUBLIC_PATH, publicPath, () => {
 
 		// Upload using b4a.exe
@@ -96,10 +64,9 @@ function deployToSSH(localPath) {
 	const config = getSSHConfig();
 	const remotePath = config.remoteRoot;
 
-	const fs = require('fs')
-	const path = require('path')
-	const node_ssh = require('node-ssh')
-	const sshClient = new node_ssh()
+	const path = require('path');
+	const node_ssh = require('node-ssh');
+	const sshClient = new node_ssh();
 
 	console.log('Connecting to ssh...');
 
@@ -163,7 +130,7 @@ function copyDataPublicContent(source, destination, callback) {
 		callback();
 	}
 
-	console.log('copying %o to %o', 'data-public', destination);
+	console.log('copying %o to %o', 'assets', destination);
 	const ncp = require('ncp').ncp;
 	ncp.limit = 1;
 
@@ -181,10 +148,10 @@ function copyPackageDotJson() {
 	const fs = require('fs');
 	let buffer = fs.readFileSync('package.json');
 	let text = buffer.toString();
-	let package = JSON.parse(text);
+	let pkg = JSON.parse(text);
 
 	// Modify Aliases to new path
-	let moduleAlias = package._moduleAliases;
+	let moduleAlias = pkg._moduleAliases;
 	if (moduleAlias) {
 		Object.keys(moduleAlias).forEach(k => {
 
@@ -196,12 +163,12 @@ function copyPackageDotJson() {
 			moduleAlias[k] = aliasPath;
 		});
 	}
-	package._moduleAliases = moduleAlias;
+	pkg._moduleAliases = moduleAlias;
 
 	if (!fs.existsSync(BUILD_PATH)) {
 		throw 'The build directory has not been created. Use `npm run deploy\n`'
 	}
-	fs.writeFileSync(`${BUILD_PATH}/package.json`, JSON.stringify(package, null, '\t'));
+	fs.writeFileSync(`${BUILD_PATH}/pkg.json`, JSON.stringify(pkg, null, '\t'));
 }
 
 function getSSHConfig() {

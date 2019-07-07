@@ -43,3 +43,4 @@ build/
 
 # Credentials
 ssh-config.json
+**/credentials/*.js

@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"allowJs": true,
 		"allowSyntheticDefaultImports": true,
-		"baseUrl": ".",
+		"baseUrl": "src",
 		"declaration": false,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
@@ -15,18 +15,19 @@
 		"sourceMap": false,
 		"target": "es6",
 		"outDir": "build/cloud",
+		"resolveJsonModule": true,
 		"paths": {
 			"@app/env": [
-				"src/env/env"
+				"env/env"
 			],
 			"@library/*": [
-				"src/library/*"
+				"library/*"
 			],
 			"@modules/*": [
-				"src/modules/*"
+				"modules/*"
 			],
 			"@parse": [
-				"src/library/parse.server"
+				"library/parse.server"
 			]
 		}
 	},

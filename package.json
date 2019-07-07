@@ -1,6 +1,7 @@
 {
 	"name": "mayapp-backend",
 	"devDependencies": {
+		"@types/nodemailer": "^6.2.0",
 		"@types/parse": "^2.2.4",
 		"@types/request": "^2.48.1",
 		"@types/stripe": "^6.19.8",

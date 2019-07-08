@@ -138,7 +138,7 @@ function copyDataPublicContent(source, destination, callback) {
 		if (err) {
 			return console.error(err);
 		}
-		console.log('done');
+		console.log('done.');
 		callback();
 	});
 }
@@ -159,7 +159,7 @@ function copyPackageDotJson() {
 			aliasPath = aliasPath.replace(BUILD_PATH.replace('./', ''), '');
 			aliasPath = aliasPath.indexOf('/') == 0 ? aliasPath.slice(1) : aliasPath;
 
-			console.log('psackage.json: Rewriting alias %o => %o', moduleAlias[k], aliasPath);
+			console.log('\tpackage.json: Rewriting alias %o => %o', moduleAlias[k], aliasPath);
 			moduleAlias[k] = aliasPath;
 		});
 	}
@@ -168,7 +168,7 @@ function copyPackageDotJson() {
 	if (!fs.existsSync(BUILD_PATH)) {
 		throw 'The build directory has not been created. Use `npm run deploy\n`'
 	}
-	fs.writeFileSync(`${BUILD_PATH}/pkg.json`, JSON.stringify(pkg, null, '\t'));
+	fs.writeFileSync(`${BUILD_PATH}/package.json`, JSON.stringify(pkg, null, '\t'));
 }
 
 function getSSHConfig() {

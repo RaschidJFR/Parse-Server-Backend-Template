@@ -9,6 +9,7 @@
 		"@types/request": "^2.48.1",
 		"@types/stripe": "^6.19.8",
 		"@types/xml2js": "^0.4.3",
+		"cross-env": "^5.2.0",
 		"mkdirp": "^0.5.1",
 		"ncp": "^2.0.0",
 		"node-flags": "^0.1.9",
@@ -18,16 +19,15 @@
 		"typescript": "^3.0.3"
 	},
 	"scripts": {
-		"deploy": "tsc && node deploy",
-		"server": "tsc && parse-server ./parse-server-config.json",
+		"start": "cross-env NODE_ENV=development tsc && parse-server ./parse-server-config.json",
+		"build": "cross-env NODE_ENV=development tsc",
+		"build:debug": "cross-env NODE_ENV=development tsc --sourcemap",
 		"dashboard": "parse-dashboard --config ./parse-dashboard-config.json",
+		"debug": "npm run build:debug && npm run run:debug",
+		"deploy": "cross-env NODE_ENV=production tsc && node deploy --b4a",
+		"lint": "tslint src/**/*",
 		"mongo": "mongod",
-		"build": "node node_modules/typescript/bin/tsc",
-		"build:debug": "node node_modules/typescript/bin/tsc --sourcemap",
-		"tsc": "tsc",
-		"lint": "node node_modules/tslint/bin/tslint src/**/*",
-		"run:debug": "node --inspect node_modules/parse-server/bin/parse-server parse-server-config.json",
-		"debug": "npm run build:debug && npm run run:debug"
+		"run:debug": "node --inspect node_modules/parse-server/bin/parse-server parse-server-config.json"
 	},
 	"dependencies": {
 		"i18n-iso-countries": "^4.0.0",

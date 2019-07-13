@@ -7,42 +7,57 @@ export class Files {
 	 * @param originalObject The old object (obtained from `request.original`)
 	 * @param newObject newObject The modified object (obtained from `request.object`)
 	 * @param key Field that contains the array of files
-	 * @returns Removed file count
+	 * @param ignoreError If `true`, don't throw any execption if a delete fails.
+	 * @returns Removed file count (if no error)
 	 */
-	static removeUnlinkedFiles(originalObject: Parse.Object, newObject: Parse.Object, key: string): Promise<number> {
+	static async removeUnlinkedFiles(
+		originalObject: Parse.Object,
+		newObject: Parse.Object,
+		key: string,
+		ignoreError = false): Promise<number> {
+
 		if (!originalObject) return Promise.resolve(0);
 
-		return Parse.Object.fetchAll([originalObject, newObject], { useMasterKey: true })
-			.then(() => {
+		await Parse.Object.fetchAll([originalObject, newObject], { useMasterKey: true })
 
-				const deleteFilePromises = [];
-				const originalArr = originalObject.get(key) || [];
-				const newArr = newObject.get(key) || [];
+		const deleteFilePromises = [];
+		const originalValue: Parse.File[] | Parse.File = originalObject.get(key) || [];
+		const newValue: Parse.File[] | Parse.File = newObject.get(key) || [];
 
-				if (originalArr.length > newArr.length) {
+		// If this is an array key
+		if (Array.isArray(originalValue) && Array.isArray(newValue)) {
 
-					let toRemove = this.getUnlinkedFiles(originalArr, newArr);
-					console.log('Removing %i unlinked files', toRemove.length);
+			if (originalValue.length > newValue.length) {
 
-					toRemove.forEach(file => {
-						const p = this.deleteFile(file);
-						deleteFilePromises.push(p);
-					});
-				}
+				let toRemove = this.getUnlinkedFiles(originalValue, newValue);
+				console.log('Removing %i unlinked files', toRemove.length);
 
-				return Promise.all(deleteFilePromises);
+				toRemove.forEach(file => {
+					const p = this.deleteFile(file, ignoreError);
+					deleteFilePromises.push(p);
+				});
+			}
 
-			})
-			.then((results) => results.length);
+			const results = await Promise.all(deleteFilePromises);
+			return results.length;
+		}
+		// If this is a file pointer key
+		else if (newValue) {
+			await this.deleteFile(originalValue as Parse.File, ignoreError);
+			return 1;
+		}
+
+		return 0;
 	}
 
-/**
-	 * Deletes a physical file from Parse Server.
-	 */
+	/**
+		 * Deletes a physical file from Parse Server.
+		 * @param ignoreError If `true`, don't throw any execption if a delete fails.
+		 */
 	static async deleteFile(file: Parse.File, ignoreError = false): Promise<void> {
 		const url = file && file.url && file.url().replace(`${Parse.applicationId}/`, '');
 		console.log('delete %o', url);
-		if(!url) return null;
+		if (!url) return null;
 
 		try {
 			await Parse.Cloud.httpRequest({

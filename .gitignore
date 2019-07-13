@@ -9,7 +9,7 @@
 log.txt
 *.sublime-project
 *.sublime-workspace
-.vscode/
+.vscode/*
 npm-debug.log*
 
 .idea/
@@ -44,3 +44,4 @@ build/
 # Credentials
 ssh-config.json
 **/credentials/*.js
+!.vscode/launch.json

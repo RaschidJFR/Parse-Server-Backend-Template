@@ -19,15 +19,15 @@
 		"typescript": "^3.0.3"
 	},
 	"scripts": {
-		"start": "cross-env NODE_ENV=development tsc && parse-server ./parse-server-config.json",
-		"build": "cross-env NODE_ENV=development tsc",
-		"build:debug": "cross-env NODE_ENV=development tsc --sourcemap",
+		"start": "npm run build && parse-server ./parse-server-config.json",
+		"build": "cross-env NODE_ENV=development tsc --sourcemap",
+		"build:prod": "cross-env NODE_ENV=development tsc",
 		"dashboard": "parse-dashboard --config ./parse-dashboard-config.json",
-		"debug": "npm run build:debug && npm run run:debug",
+		"debug": "node --inspect node_modules/parse-server/bin/parse-server parse-server-config.json",
 		"deploy": "cross-env NODE_ENV=production tsc && node deploy --b4a",
 		"lint": "tslint src/**/*",
 		"mongo": "mongod",
-		"run:debug": "node --inspect node_modules/parse-server/bin/parse-server parse-server-config.json"
+		"server": "node_modules/parse-server/bin/parse-server parse-server-config.json"
 	},
 	"dependencies": {
 		"i18n-iso-countries": "^4.0.0",

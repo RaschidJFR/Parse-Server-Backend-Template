@@ -3,29 +3,99 @@
 // and follow this guide to enable a proper auth for using gmail smpt:
 // https://medium.com/@nickroach_50526/sending-emails-with-node-js-using-smtp-gmail-and-oauth2-316fe9c790a1
 
-import * as Mailgun from 'mailgun-js';
 import * as nodemailer from 'nodemailer';
-import { ENV } from '@app/env';
+import * as ejs from 'ejs';
 
-const MAILGUN_API_KEY = 'ENV.mailgun.apiKey';							// Your mailgun key
-const DOMAIN = 'ENV.mailgun.domain';											// Your domain registered on mailgun
-const FROM = `Test<no-reply@${'ENV.mailgun.domain'}>`;		// Your company 'from' email
-const SMTP_CONFIG = {};
+export interface OAuth2 {
+	user: string,
+	type: string,
+	clientId: string,
+	clientSecret: string,
+	refreshToken: string,
+	accessToken: string,
+}
 
 export namespace Mail {
+	/**
+	 * Current configuration
+	 */
+	export let config: MailModuleConfig;
 
-	export function sendEmail(
-		params: { to: string, subject: string, html: string },
-		service: 'mailgun' | 'smpt' = 'mailgun'
-	): Promise<any> {
+	export interface MailModuleConfig {
+		defaultService?: 'mailgun' | 'smtp'
+		/**
+		 * Sender's email: Name<no-reply@domain.com>
+		 */
+		from: string,
+		mailgunConfig?: {
+			/**
+			 * Your mailgun key
+			 */
+			apiKey: string,
+			/**
+			 * Your domain registered on mailgun
+			 */
+			domain: string,	//
+		},
+		nodemailerConfig?: {
+			/**
+			 * You can use this parameter to omit params `host`/`port`/`secure`.
+			 *
+			 * `'Gmail' | 'Godaddy' | 'Hotmail' | 'Mailgun' | 'Mandrill' | 'Outlook365' | 'Yahoo',`
+			 */
+			service?: string,
+			host?: string,
+			port?: number,
+			secure?: boolean,
+			/**
+			 * If not provided, provide property `oauth2TokenFunction`
+			 */
+			auth?: {
+				user: string,
+				pass: string,
+			} | OAuth2,
+		},
+		/**
+		 * Function to get the required OAuth2 tokens every time
+		 * an email is sent.
+		 * */
+		oauth2TokenFunction?: () => Promise<OAuth2>,
+		/**
+		 * Folder with .ejs template files
+		 */
+		templatePath: string
+	}
 
-		if (service == 'mailgun')
-			return sendEmailWithMailgun(params);
-		else
-			return sendMailSMTP(params);
+	export interface SendEmailParams {
+		html?: string,
+		subject: string,
+		template?: {
+			file: string,
+			data: any
+		},
+		to: string,
+	}
+
+	export async function sendEmail(params: SendEmailParams): Promise<any> {
+		let html = params.html;
+		if (params.template) {
+			html = await ejs.renderFile(`${Mail.config.templatePath}/${params.template.file}`, params.template.data);
+		}
+
+		try {
+			return sendMailSMTP({
+				to: params.to,
+				subject: params.subject,
+				html,
+			});
+		} catch (e) {
+			throw new Error(e.toString() + '\nConfig:' + Mail.config);
+		}
 	};
 
-	export function initCloudFunctions() {
+	export function init(config: MailModuleConfig) {
+		Mail.config = config;
+
 		Parse.Cloud.define('mail:test', async (request) => {
 			if (!request.master) throw 'requires master key';
 
@@ -37,37 +107,31 @@ export namespace Mail {
 						<br>
 						<p>
 							Config:<br>
-							<pre>${JSON.stringify(ENV, null, 2)}</pre>
-						</p>`
-			}, request.params.service);
+							<pre>${JSON.stringify(config, null, 2)}</pre>
+						</p>`,
+				template: request.params.template && {
+					file: 'test.ejs',
+					data: { config: Mail.config }
+				}
+			});
 
-			response.config = ENV;
-			return response;
+			return { response, config };
 		});
+
+		console.log('Inited Mail module\n', Mail.config);
 	}
 }
 
-function sendEmailWithMailgun(params: { to: string, subject: string, html: string }): Promise<any> {
-	console.log('Sending email to ', params.to);
+async function sendMailSMTP(params: { to: string, subject: string, html: string }): Promise<any> {
+	console.log(`Sending email to %o`, params.to);
 
-	const mailgun: Mailgun.Mailgun = Mailgun({ apiKey: MAILGUN_API_KEY, domain: DOMAIN });
-	const data: Mailgun.messages.SendData = {
-		from: FROM,
-		to: params.to,
-		subject: params.subject,
-		html: params.html
-	};
+	// Refresh access token (if using Auth2)
+	if (Mail.config.oauth2TokenFunction)
+		Mail.config.nodemailerConfig.auth = await Mail.config.oauth2TokenFunction();
 
-	return mailgun.messages().send(data);
-}
-
-
-function sendMailSMTP(params: { to: string, subject: string, html: string }): Promise<any> {
-	console.log(`Sending email to ${params.to}`);
-
-	const transporter = nodemailer.createTransport(SMTP_CONFIG);
+	const transporter = nodemailer.createTransport(Mail.config.nodemailerConfig as any);
 	const mailOptions = {
-		from: FROM,
+		from: Mail.config.from,
 		to: params.to,
 		subject: params.subject,
 		html: params.html

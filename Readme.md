@@ -13,15 +13,17 @@ The package is meant tu speed up testing and deployment for when you're working 
 
 1. Make sure you've installed globally [parse-server](https://www.npmjs.com/package/parse-server) (`$ npm i -g parse-server`). Then link it with `$ npm link parse-server`.
 2. You may install either [mongodb-runner](https://www.npmjs.com/package/mongodb-runner) (`$ npm i -g mongodb-runner`) to quickly start testing Parse Server, or [MongoDB Compass Community Edition](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/) to set up a local mongodb server instead. The latter enables your local PC to store real data instead of clearing it everytime the Parse Server stops with mongodb-runner.
-3. Optionally you may install [parse-dashboard](https://www.npmjs.com/package/parse-dashboard) (`$ npm i -g parse-dashboard`) so you see and manage your server's data.
+3. Optionals:
+   * You may want to install [parse-dashboard](https://www.npmjs.com/package/parse-dashboard) (`$ npm i -g parse-dashboard`) so you see and manage your server's data.
+   * If you'll clone from/to your dev and prod databases you'll need [mongodb](https://www.npmjs.com/package/mongodb) and [mongo-clone](https://www.npmjs.com/package/mongo-clone) (`$ npm i -g mongodb mongo-clone`)
 
 ### Server Configuration ###
 
-You can set the server's configuration in in `parse-server.config.json` and `parse-dashboard.config.json`.
+You can set the server's configuration in `parse-server.config.js` and `parse-dashboard.config.json`, inside the `/config` folder.
 
-1. Set the properties `appId`, `masterKey`, `javascriptKey` and/or `restApiKey` in `parse-server.config.json`. The repo has  some default values and you may run it with them, but you'll want to change them later on for the actual production values.
+1. Set the properties `appId`, `masterKey`, `javascriptKey` and/or `restApiKey` in `parse-server.config.js`. The repo has  some default values and you may run it with them, but you'll want to change them later on for the actual production values.
 2. Set the same `appId` and `masterKey` in `parse-dashboard.config.json` (if you'll use the dashboard).
-3. Enable a mongo database endpoint on `mongodb://localhost/<yourAppNameOrWhatever>` and add the path's value in the property `databaseURI` in `parse-server.config.json`.
+3. Enable a mongo database endpoint on `mongodb://localhost/<yourAppNameOrWhatever>` and add the path's value in the property `dev` in `databases.json`.
 
 > * For more server configuration settings see the [Parse Server official guide](https://docs.parseplatform.org/parse-server/guide/#usage).
 > * See the [MongoDB Compass guide](https://docs.mongodb.com/compass/master/databases/#create-a-database) or [mongo-runner instructions](https://www.npmjs.com/package/mongodb-runner) to learn how to create the database endpoint.
@@ -89,9 +91,9 @@ Add this somewhere in the client app ([browser](https://docs.parseplatform.org/j
 import * as Parse from 'parse';                   	// Don't forget to `$ npm i parse` and `$ npm i -D @types/parse`
 
 // Credentials
-const PARSE_APP_ID = 'yourAppId';					// <- Use this value from the server's `parse-server.config.json`
-const PARSE_JS_API_KEY = 'yourMasterKey';			// <- Use this value from the server's `parse-server.config.json`
-const PARSE_SERVER_URL = 'localhost:1337/parse';	// <- Use this value from the server's `parse-server.config.json`
+const PARSE_APP_ID = 'yourAppId';					// <- Use this value from the server's `parse-server.config.js`
+const PARSE_JS_API_KEY = 'yourMasterKey';			// <- Use this value from the server's `parse-server.config.js`
+const PARSE_SERVER_URL = 'localhost:1337/parse';	// <- Use this value from the server's `parse-server.config.js`
 
 // Init SDK
 Parse.initialize(PARSE_APP_ID, PARSE_JS_API_KEY);

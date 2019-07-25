@@ -3,6 +3,7 @@
 	"devDependencies": {
 		"@types/ejs": "^2.6.3",
 		"@types/mailgun-js": "^0.22.1",
+		"@types/mongodb": "^3.1.30",
 		"@types/node": "^12.0.12",
 		"@types/nodemailer": "^6.2.0",
 		"@types/parse": "^2.2.7",
@@ -19,15 +20,19 @@
 		"typescript": "^3.0.3"
 	},
 	"scripts": {
-		"start": "npm run build && parse-server ./parse-server-config.json",
-		"build": "cross-env NODE_ENV=development tsc --sourcemap",
-		"build:prod": "cross-env NODE_ENV=development tsc",
-		"dashboard": "parse-dashboard --config ./parse-dashboard-config.json",
-		"debug": "node --inspect node_modules/parse-server/bin/parse-server parse-server-config.json",
-		"deploy": "cross-env NODE_ENV=production tsc && node deploy --b4a",
+		"start": "npm run build && cross-env NODE_ENV=development parse-server config/parse-server.config.js",
+		"build": "tsc --sourcemap",
+		"build:prod": "tsc",
+		"clean": "rm -r --force build/cloud",
+		"cloneRemoteDatabase": "node scripts/clone-remote-database",
+		"dashboard": "parse-dashboard --config config/parse-dashboard.config.json",
+		"debug": "cross-env NODE_ENV=development node --inspect node_modules/parse-server/bin/parse-server config/parse-server.config.js",
+		"deploy": "tsc && node scripts/deploy",
 		"lint": "tslint src/**/*",
 		"mongo": "mongod",
-		"server": "node_modules/parse-server/bin/parse-server parse-server-config.json"
+		"predeploy": "npm run clean",
+		"postdeploy": "npm run build",
+		"server": "npx parse-server config/parse-server.config.js"
 	},
 	"dependencies": {
 		"i18n-iso-countries": "^4.0.0",

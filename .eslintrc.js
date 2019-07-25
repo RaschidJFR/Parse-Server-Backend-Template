@@ -256,8 +256,8 @@ module.exports = {
     //     "prefer-rest-params": "error",
     //     "prefer-spread": "error",
     //     "prefer-template": "off",
-    //     "quote-props": "off",
-    //     "quotes": "off",
+            "quote-props": ["error", "as-needed"],
+           "quotes": ["error", "single"],
     //     "radix": [
     //         "error",
     //         "as-needed"

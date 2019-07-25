@@ -7,12 +7,31 @@ export default {
   dev: {
     apiKey: ' ******',
     domain: '******.mailgun.org',
-    from: `Name<no-reply@*****.mailgun.org>`
   },
   prod: {
     apiKey: ' ******',
     domain: '******.mailgun.org',
-    from: `Name<no-reply@*****.mailgun.org>`
   }
 }
+```
+
+```
+//smpt.js
+export default {
+  dev: {
+    service?: 'Gmail | Godaddy | Hotmail | Mailgun | Mandrill | Outlook365 | Yahoo',
+    host?: string,
+    port?: number,
+    secure?: boolean,
+    auth: {
+      user: string,
+      pass: string
+    }
+  },
+  prod: {
+    ...
+    }
+  }
+}
+
 ```

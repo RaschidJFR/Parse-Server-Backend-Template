@@ -1,5 +1,8 @@
-const BUILD_PATH = './build/cloud';
-const DATA_PUBLIC_PATH = './assets';
+// Note: Make sure directory structure is ok
+const Path = require('path');
+const BUILD_PATH = Path.resolve(__dirname + '/../build/cloud');
+const DATA_PUBLIC_PATH = Path.resolve(__dirname + '/../assets');
+const CONFIG_PATH = Path.resolve(__dirname + '/../config/ssh.config.json');
 
 const flags = require('node-flags');
 const toB4A = flags.get('b4a');
@@ -28,7 +31,7 @@ function deployToBack4App(filePath) {
 	if (!fs.existsSync(`${filePath}\\..\\public`)) {
 
 		var mkdirp = require('mkdirp');
-		mkdirp(publicPath, function (err) {
+		mkdirp(publicPath, function(err) {
 			if (err) console.error(err)
 			else console.log(`Created needed directory ${publicPath}`)
 		});
@@ -39,8 +42,8 @@ function deployToBack4App(filePath) {
 
 		// Upload using b4a.exe
 		const { spawn } = require('child_process');
-		const command = `b4a`
-		const args = `deploy`.split(' ');
+		const command = 'b4a'
+		const args = 'deploy'.split(' ');
 
 		console.log(`\x1b[32m> ${command} ${args.join(' ')}\x1b[0m`);
 		let child = spawn(command, args, { cwd: execPAth });
@@ -61,6 +64,9 @@ function deployToBack4App(filePath) {
 }
 
 function deployToSSH(localPath) {
+	const Path = require('path');
+	localPath = Path.resolve(localPath);
+
 	const config = getSSHConfig();
 	const remotePath = config.remoteRoot;
 
@@ -75,7 +81,7 @@ function deployToSSH(localPath) {
 		username: config.user,
 		password: config.password
 	})
-		.then(function () {
+		.then(function() {
 			console.log('Start transfer to remote path \x1b[33m%s\x1b[0m', remotePath);
 
 			// Putting entire directories
@@ -84,12 +90,12 @@ function deployToSSH(localPath) {
 			return sshClient.putDirectory(localPath, remotePath, {
 				recursive: true,
 				concurrency: 10,
-				validate: function (itemPath) {
+				validate: function(itemPath) {
 					const baseName = path.basename(itemPath)
 					return baseName.substr(0, 1) !== '.' && // do not allow dot files
 						baseName !== 'node_modules' // do not allow node_modules
 				},
-				tick: function (localItem, remoteItem, error) {
+				tick: function(localItem, remoteItem, error) {
 					if (error) {
 						console.log('\x1b[31mfailed: %s\x1b[0m', localItem);
 						// failed.push(`${localItem} => ${remoteItem}`);
@@ -100,25 +106,25 @@ function deployToSSH(localPath) {
 				}
 			})
 		})
-		.then(function (status) {
+		.then(function(status) {
 			console.log('the directory transfer was %s\n', status ? '\x1b[32msuccessful\x1b[0m' : '\x1b[31munsuccessful\x1b[0m');
 			// console.log('successful: \x1b[32m%s\x1b[0m', successful.join('\n'));
 			// console.log('failed: \x1b[30m%s\x1b[0m', failed.join('\n'));
 		})
-		.then(function () {
+		.then(function() {
 			if (config.restartCommand)
 				return sshClient.execCommand(config.restartCommand)
 			else
 				return null
 		})
-		.then(function (result) {
+		.then(function(result) {
 			if (result) {
 				console.log('STDOUT:\n\n' + result.stdout)
 				console.log('\nSTDERR:\n\n' + result.stderr)
 			}
 			process.exit();
 		})
-		.catch(function (error) {
+		.catch(function(error) {
 			console.log('\x1b[31mfailed: %s\x1b[0m', error);
 			process.exit();
 		});
@@ -134,7 +140,7 @@ function copyDataPublicContent(source, destination, callback) {
 	const ncp = require('ncp').ncp;
 	ncp.limit = 1;
 
-	ncp(source, destination, function (err) {
+	ncp(source, destination, function(err) {
 		if (err) {
 			return console.error(err);
 		}
@@ -159,30 +165,32 @@ function copyPackageDotJson() {
 			aliasPath = aliasPath.replace(BUILD_PATH.replace('./', ''), '');
 			aliasPath = aliasPath.indexOf('/') == 0 ? aliasPath.slice(1) : aliasPath;
 
-			console.log('\tpackage.json: Rewriting alias %o => %o', moduleAlias[k], aliasPath);
+			console.log('\tpackage.json: Rewriting alias %s => %s', moduleAlias[k], aliasPath);
 			moduleAlias[k] = aliasPath;
 		});
 	}
 	pkg._moduleAliases = moduleAlias;
 
 	if (!fs.existsSync(BUILD_PATH)) {
-		throw 'The build directory has not been created. Use `npm run deploy\n`'
+		throw new Error('Folder ' + BUILD_PATH + ' not found');
 	}
 	fs.writeFileSync(`${BUILD_PATH}/package.json`, JSON.stringify(pkg, null, '\t'));
 }
 
 function getSSHConfig() {
+	const fs = require('fs');
+	const Path = require('path');
+
 	const SSH_OPTIONS_STRUCT = {
 		localFolder: 'build',
-		host: "yourhost.com",
-		user: "user@yourhost.com",
-		password: "********",
-		remoteRoot: "/path/to/remote/folder",
-		restartCommand: "sudo ./stop_parse & sudo ./start_parse"
+		host: 'yourhost.com',
+		user: 'user@yourhost.com',
+		password: '********',
+		remoteRoot: '/path/to/remote/folder',
+		restartCommand: 'sudo ./stop_parse & sudo ./start_parse'
 	}
 
-	const fs = require('fs');
-	const configFileName = 'ssh-config.json';
+	const configFileName = Path.resolve(CONFIG_PATH);
 
 	let data;
 	try {
@@ -190,7 +198,7 @@ function getSSHConfig() {
 	} catch (err) {
 
 		if (err.code == 'ENOENT') {
-			console.error(`\x1b[31mThe file\x1b[33m %o \x1b[31mhas not been found in the root directory. Please create it using the following structure:\x1b[0m\n\n %s \n`,
+			console.error('\x1b[31mThe file\x1b[33m %o \x1b[31mhas not been found in the root directory. Please create it using the following structure:\x1b[0m\n\n %s \n',
 				configFileName, JSON.stringify(SSH_OPTIONS_STRUCT, null, 2));
 
 			process.exit();

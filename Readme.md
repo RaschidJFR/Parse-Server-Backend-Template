@@ -6,8 +6,8 @@ The package is meant tu speed up testing and deployment for when you're working 
 
 ## Setup and Prerequisits  ##
 
-1. You'll need [Node.js](https://nodejs.org) installed on your system.
-2. Run `$ npm install` on the root folder to install package's local dependencies.
+* You'll need [Node.js](https://nodejs.org) installed on your system.
+* Run `$ npm install` on the root folder to install package's local dependencies.
 
 ### Install Gloabl Dependencies ###
 
@@ -34,19 +34,20 @@ Put your `.ts` source files for cloud code in the folder `src/`. The file `main.
 ## Running Locally ##
 
 1. Start mongodb with `$ mongod.exe` or equivalent on MacOS (this may be already running if you installed MongoDB Compass) or mongodb-runner (`$ mongodb-runner start`).
-2. Use `$ npm start` to run the local Parse Server (project will build before launching the server). The server will be accessible on `http://localhost:1337/parse`.
-3. Run `$ npm run dashboard` to start the Dashboard. You can access it at `http://localhost:4040`.
+2. Use `$ npm start` to run the local Parse Server (project will build before launching the server). The server will be accessible on [http://localhost:1337/parse](http://localhost:1337/parse).
+3. Run `$ npm run dashboard` to start the Dashboard. You can access it at [http://localhost:4040](http://localhost:4040).
 
 ## Deploying ##
 
-### Deploy to Back4App.com ###
-[Back4App](https://back4app.com) privides free BaaS to host your Parse Server applications.
+### A) Deploy to Back4App.com ###
+[Back4App](https://back4app.com) privides free BaaS to host your Parse Server applications. You'll need an account to follow these steps.
 
 1. Make sure you've installed the [Back4App CLI](https://blog.back4app.com/2017/01/20/cli-parse-server/) in your system.
-2. Follow the instructions to [link your local back4app project](https://www.back4app.com/docs/command-line-tool/connect-to-back4app)* inside the output folder `build/`.
-3. Run `$ npm run deploy -- --b4a` to deploy your cloud code to your server on a [Back4App](https://back4app.com) account. The project will be compiled and uploaded immediatly.
+2. Follow the instructions to [link your local back4app project](https://www.back4app.com/docs/command-line-tool/connect-to-back4app).
+3. Run `$ b4a new` inside the folder `/build`*.
+4. Run `$ npm run deploy -- --b4a` to deploy your cloud code to your server on a [Back4App](https://back4app.com) account. The project will be compiled and uploaded immediatly.
 
-*If you've already created a project on Back4App you can run the series of commands from the project root folder:
+*If you've already created a project on [Back4App](https://back4app.com) you can run the series of commands from the project root folder:
 
 ```
 $ b4a new
@@ -56,7 +57,7 @@ $ b4a new
   > b                         # 'b' for blank project option
 ```
 
-### Deploy to remote server via SSH ###
+### B) Deploy to remote server via SSH ###
 
 To deploy your cloud code to a server with SSH (on Google Cloud for example), run `$ npm run deploy -- --ssh`.
 
@@ -119,4 +120,4 @@ Parse.Cloude.run('test', params).then(response => {
 //  }
 ```
 
-For more information see the [Cloud Code Guide](https://docs.parseplatform.org/cloudcode/guide/).
+For more information see the Parse Server's [Cloud Code Guide](https://docs.parseplatform.org/cloudcode/guide/).

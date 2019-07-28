@@ -1,14 +1,13 @@
 {
-	"name": "mayapp-backend",
+	"name": "scope-server",
 	"devDependencies": {
 		"@types/ejs": "^2.6.3",
-		"@types/mailgun-js": "^0.22.1",
-		"@types/mongodb": "^3.1.30",
+		"@types/express": "^4.17.0",
 		"@types/node": "^12.0.12",
 		"@types/nodemailer": "^6.2.0",
 		"@types/parse": "^2.2.7",
 		"@types/request": "^2.48.1",
-		"@types/stripe": "^6.19.8",
+		"@types/stripe": "^6.31.9",
 		"@types/xml2js": "^0.4.3",
 		"cross-env": "^5.2.0",
 		"mkdirp": "^0.5.1",
@@ -27,14 +26,17 @@
 		"cloneRemoteDatabase": "node scripts/clone-remote-database",
 		"dashboard": "parse-dashboard --config config/parse-dashboard.config.json",
 		"debug": "cross-env NODE_ENV=development node --inspect node_modules/parse-server/bin/parse-server config/parse-server.config.js",
-		"deploy": "tsc && node scripts/deploy",
+		"deploy": "tsc && node scripts/deploy --b4a",
 		"lint": "tslint src/**/*",
 		"mongo": "mongod",
+		"prebuild": "npm run clean",
 		"predeploy": "npm run clean",
 		"postdeploy": "npm run build",
 		"server": "npx parse-server config/parse-server.config.js"
 	},
 	"dependencies": {
+		"body-parser": "^1.19.0",
+		"ejs": "^2.6.2",
 		"i18n-iso-countries": "^4.0.0",
 		"module-alias": "^2.2.0",
 		"stripchar": "^1.2.1"

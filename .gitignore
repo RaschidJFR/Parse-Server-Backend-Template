@@ -42,6 +42,6 @@ logs/
 build/
 
 # Credentials
-ssh-config.json
+ssh.config.json
 **/credentials/*.js
 !.vscode/launch.json

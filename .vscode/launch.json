@@ -31,7 +31,7 @@
         "NODE_ENV": "development"
       },
       "args": [
-        "parse-server-config.json"
+        "config/parse-server.config.js"
       ],
       "outFiles": [
         "${workspaceFolder}/build/cloud/**/*.js"

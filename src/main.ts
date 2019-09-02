@@ -12,3 +12,9 @@ require('module-alias/register');
 
 // import { Payment } from '@modules/stripe';
 // Payment.initCloudFunctions();
+
+// Start express app manually if in local server
+// if (process.env.NODE_ENV == 'development') {
+// 	global['app'] = require('express')();
+// 	require('./app');
+// }

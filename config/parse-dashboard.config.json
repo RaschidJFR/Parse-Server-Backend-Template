@@ -4,7 +4,7 @@
 			"serverURL": "http://localhost:1337/parse",
 			"appId": "appkey",
 			"masterKey": "masterkey",
-			"appName": "MyApp"
+			"appName": "MyApp",
 			"iconName": null
 		}
 	],

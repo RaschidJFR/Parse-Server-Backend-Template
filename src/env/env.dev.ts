@@ -1,8 +1,7 @@
-// import mailgunCredentials from './credentials/mailgun';
-
 export const ENV = {
-	assetsPath: 'assets',
-	debug: true,
-	isServer: true,
-	// mailgun: mailgunCredentials.dev
+  appHomeUrl: 'http://localhost:4200',
+  assetsPath: 'assets',
+  debug: true,
+  isServer: true,
+  production: false,
 };

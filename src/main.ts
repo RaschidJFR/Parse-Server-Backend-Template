@@ -1,20 +1,13 @@
 require('module-alias/register');
+import { Auth } from '@modules/auth';
+import { Setup } from '@modules/setup';
+import { ENV } from '@app/env';
 
-// Uncomment the modules you need and init them as required
-
-// import { Currency } from '@modules/currency';
-
-// import { Auth } from '@modules/auth';
-// Auth.initCloudFunctions();
-
-// import { Setup } from '@modules/setup';
-// Setup.initDatabase({ username: 'admin', password: 'admin' });
-
-// import { Payment } from '@modules/stripe';
-// Payment.initCloudFunctions();
+Auth.initCloudFunctions();
+Setup.initCloudJobs();
 
 // Start express app manually if in local server
-// if (process.env.NODE_ENV == 'development') {
-// 	global['app'] = require('express')();
-// 	require('./app');
-// }
+if (ENV.debug) {
+  global['app'] = require('express')();
+  require('./app');
+}

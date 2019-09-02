@@ -16,11 +16,11 @@
     },
     "import-blacklist": [
       true,
-      "Parse"
+      "parse"
     ],
     "indent": [
       true,
-      "tabs",
+      "spaces",
       2
     ],
     "max-line-length": {
@@ -29,21 +29,19 @@
         140
       ]
     },
-    "member-ordering": [
-      true,
-      {
-        "order": [
-          "instance-sandwich"
-        ]
+    "member-ordering": {
+      "severity": "warning",
+      "options": {
+        "order": "instance-sandwich",
+        "alphabetize": true
       }
-    ],
+    },
     "no-inferrable-types": [
       true,
       "ignore-params"
     ],
     "no-non-null-assertion": true,
     "no-redundant-jsdoc": true,
-    "no-use-before-declare": true,
     "object-literal-key-quotes": [
       true,
       "as-needed"
@@ -52,7 +50,6 @@
       true,
       "single"
     ],
-    "no-output-on-prefix": true,
     "variable-name": {
       "severity": "warning",
       "options": [

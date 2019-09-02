@@ -1,8 +1,8 @@
-This folder contains the needed credentials for various services. Please note that content of this folder
-may be included from the repository, so here's a list of the expected files and their formats:
+This folder is meant to contain the needed credentials for various services. Please note that the content of this folder
+may be excluded from the repository, so here's a list of the possibly expected files and their formats:
 
-```
-//mailgun.js
+```ts
+//mailgun.ts
 export default {
   dev: {
     apiKey: ' ******',
@@ -15,8 +15,8 @@ export default {
 }
 ```
 
-```
-//smpt.js
+```ts
+//smpt.ts
 export default {
   dev: {
     service?: 'Gmail | Godaddy | Hotmail | Mailgun | Mandrill | Outlook365 | Yahoo',
@@ -34,4 +34,18 @@ export default {
   }
 }
 
+```
+
+```ts
+//stripe.ts
+export default {
+  dev: {
+    publicKey: '**********',
+    secretKey: '**********'
+  },
+  prod: {
+    publicKey: '**********',
+    secretKey: '**********'
+  }
+}
 ```

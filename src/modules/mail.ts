@@ -5,147 +5,153 @@
 
 import * as nodemailer from 'nodemailer';
 import * as ejs from 'ejs';
+import * as Styliner from 'styliner';
 
 export interface OAuth2 {
-	user: string,
-	type: string,
-	clientId: string,
-	clientSecret: string,
-	refreshToken: string,
-	accessToken: string,
+  accessToken: string,
+  clientId: string,
+  clientSecret: string,
+  refreshToken: string,
+  type: string,
+  user: string,
 }
 
 export namespace Mail {
-	/**
+  /**
 	 * Current configuration
 	 */
-	export let config: MailModuleConfig;
+  export let config: MailModuleConfig;
 
-	export interface MailModuleConfig {
-		defaultService?: 'mailgun' | 'smtp'
-		/**
+  export interface MailModuleConfig {
+    /**
+		 * Relative path of default .css file from `templatePath`
+		 */
+    defaultCss?: string,
+    defaultService?: 'mailgun' | 'smtp'
+    /**
 		 * Sender's email: Name<no-reply@domain.com>
 		 */
-		from: string,
-		mailgunConfig?: {
-			/**
+    from: string,
+    mailgunConfig?: {
+      /**
 			 * Your mailgun key
 			 */
-			apiKey: string,
-			/**
+      apiKey: string,
+      /**
 			 * Your domain registered on mailgun
 			 */
-			domain: string,	//
-		},
-		nodemailerConfig?: {
-			/**
+      domain: string,	//
+    },
+    nodemailerConfig?: {
+      /**
+			 * If not provided, provide property `oauth2TokenFunction`
+			 */
+      auth?: {
+        pass: string,
+        user: string,
+      } | OAuth2,
+      host?: string,
+      port?: number,
+      secure?: boolean,
+      /**
 			 * You can use this parameter to omit params `host`/`port`/`secure`.
 			 *
 			 * `'Gmail' | 'Godaddy' | 'Hotmail' | 'Mailgun' | 'Mandrill' | 'Outlook365' | 'Yahoo',`
 			 */
-			service?: string,
-			host?: string,
-			port?: number,
-			secure?: boolean,
-			/**
-			 * If not provided, provide property `oauth2TokenFunction`
-			 */
-			auth?: {
-				user: string,
-				pass: string,
-			} | OAuth2,
-		},
-		/**
+      service?: string,
+    },
+    /**
 		 * Function to get the required OAuth2 tokens every time
 		 * an email is sent.
 		 * */
-		oauth2TokenFunction?: () => Promise<OAuth2>,
-		/**
+    oauth2TokenFunction?: () => Promise<OAuth2>,
+    /**
 		 * Folder with .ejs template files
 		 */
-		templatePath: string
-	}
+    templatePath: string,
+  }
 
-	export interface SendEmailParams {
-		html?: string,
-		subject: string,
-		template?: {
-			file: string,
-			data: any
-		},
-		to: string,
-	}
+  export interface SendEmailParams {
+    html?: string,
+    subject: string,
+    template?: {
+      data: any,
+      file: string,
+    },
+    to: string,
+  }
 
-	export async function sendEmail(params: SendEmailParams): Promise<any> {
-		let html = params.html;
-		if (params.template) {
-			html = await ejs.renderFile(`${Mail.config.templatePath}/${params.template.file}`, params.template.data);
-		}
+  export async function sendEmail(params: SendEmailParams): Promise<any> {
+    let html = params.html;
 
-		try {
-			return sendMailSMTP({
-				to: params.to,
-				subject: params.subject,
-				html,
-			});
-		} catch (e) {
-			throw new Error(e.toString() + '\nConfig:' + Mail.config);
-		}
-	};
+    // Load ejs template
+    if (params.template) {
+      let file = params.template.file;
+      file = file.includes('.ejs') ? file : file + '.ejs';
+      html = await ejs.renderFile(`${Mail.config.templatePath}/${file}`, params.template.data);
+    }
 
-	export function init(config: MailModuleConfig) {
-		Mail.config = config;
+    // Add theme
+    if (Mail.config.defaultCss) {
+      html = `<link rel="stylesheet" href="${Mail.config.defaultCss}">` + html;
+      const styliner = new Styliner(Mail.config.templatePath);
+      html = await styliner.processHTML(html);
+    }
 
-		Parse.Cloud.define('mail:test', async (request) => {
-			if (!request.master) throw 'requires master key';
+    try {
+      return sendMailSMTP({
+        to: params.to,
+        subject: params.subject,
+        html,
+      });
+    } catch (e) {
+      throw new Error(e.toString() + '\nConfig:' + Mail.config);
+    }
+  };
 
-			const response = await Mail.sendEmail({
-				to: request.params.email,
-				subject: `Test`,
-				html: ` <h1>Test Worked!</h1>
-						<p>Regards from the cloud server!</p>
-						<br>
-						<p>
-							Config:<br>
-							<pre>${JSON.stringify(config, null, 2)}</pre>
-						</p>`,
-				template: request.params.template && {
-					file: 'test.ejs',
-					data: { config: Mail.config }
-				}
-			});
+  export function init(config: MailModuleConfig) {
+    Mail.config = config;
 
-			return { response, config };
-		});
+    Parse.Cloud.define('mail:test', async (request) => {
+      if (!request.master) throw 'requires master key';
 
-		console.log('Inited Mail module\n', Mail.config);
-	}
+      const response = await Mail.sendEmail({
+        to: request.params.email,
+        subject: `Test`,
+        template: request.params.template || {
+          file: 'test.ejs',
+          data: { config: Mail.config }
+        }
+      });
+
+      return { response, config };
+    });
+
+    console.log('Inited Mail module\n', Mail.config);
+  }
 }
 
-async function sendMailSMTP(params: { to: string, subject: string, html: string }): Promise<any> {
-	console.log(`Sending email to %o`, params.to);
+async function sendMailSMTP(params: { html: string, subject: string, to: string, }): Promise<any> {
+  console.log(`Send email "%o" to %o`, params.subject, params.to);
 
-	// Refresh access token (if using Auth2)
-	if (Mail.config.oauth2TokenFunction)
-		Mail.config.nodemailerConfig.auth = await Mail.config.oauth2TokenFunction();
+  // Refresh access token (if using Auth2)
+  if (Mail.config.oauth2TokenFunction)
+    Mail.config.nodemailerConfig.auth = await Mail.config.oauth2TokenFunction();
 
-	const transporter = nodemailer.createTransport(Mail.config.nodemailerConfig as any);
-	const mailOptions = {
-		from: Mail.config.from,
-		to: params.to,
-		subject: params.subject,
-		html: params.html
-	};
+  const transporter = nodemailer.createTransport(Mail.config.nodemailerConfig as any);
+  const mailOptions = {
+    from: Mail.config.from,
+    to: params.to,
+    subject: params.subject,
+    html: params.html
+  };
 
-	return new Promise((resolve, reject) => {
-		transporter.sendMail(mailOptions, (error, info) => {
-			if (error)
-				reject(error);
-			else
-				resolve(info.response);
-		});
-	}).then((response) => {
-		console.log(`Email sent to ${params.to}`);
-		return response;
-	});
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error)
+        reject(error);
+      else
+        resolve(info.response);
+    });
+  });
 }

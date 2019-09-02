@@ -1,9 +1,11 @@
 <%/** @param config Mailing configuration */%>
-
-<h1>Test Worked!</h1>
-<p>Regards from the cloud server!</p>
-<br>
-<p>
-  Config:<br>
-  <pre><%=JSON.stringify(config, null, 2)%></pre>
-</p>
+<div class="container">
+  <h3>Test Worked!</h3>
+  <p>Regards from the cloud server!</p>
+  <br>
+  <p>
+    Config:<br>
+    <pre><%=JSON.stringify(config, null, 2)%></pre>
+  </p>
+  <%- include('footer') %>
+</div>

@@ -1,0 +1,6 @@
+Thanks for registering to {{appName}}
+
+To verify your email please follow this link: {{link}}
+
+If you did not request this action, ignore this message.
+

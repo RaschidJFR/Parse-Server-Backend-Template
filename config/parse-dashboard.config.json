@@ -2,8 +2,8 @@
 	"apps": [
 		{
 			"serverURL": "http://localhost:1337/parse",
-			"appId": "appkey",
-			"masterKey": "masterkey",
+			"appId": "app-id",
+			"masterKey": "master-key",
 			"appName": "MyApp",
 			"iconName": null
 		}

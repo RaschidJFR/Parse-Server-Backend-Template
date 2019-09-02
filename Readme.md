@@ -1,30 +1,52 @@
 # Parse Server Development Template #
 
-This repository contains the configuration file and the cloud code files for running on a [Parse Server](https://docs.parseplatform.org/parse-server/guide/) v3.6 backend.
-The package is meant tu speed up testing and deployment for when you're working on Parse Server's cloud code.
+This repository contains the configuration file and the cloud code files for running on a [Parse Server](https://docs.parseplatform.org/parse-server/guide/) v3.x backend.
+The package is meant to speed up testing and deployment for when you're working on Parse Server's cloud code.
 
-This package contains 2 apps: The Backend's cloud code and an [Express](https://expressjs.com/) app to handle web requests. Their entry points are the files `main.ts` and `app.ts` respectively. Those names are requested in order to work on **Back4App**.  More info:
+This package contains 2 apps: The Backend's cloud code and an Express app to handle webhooks. Their entry points are the files `main.ts` and `app.ts` respectively (Those names are requested in order to work on a hosted app on [Back4App](https://back4app.com)).
+
+More info:
 
 * [Deploy and call your first Cloud Code functions](https://www.back4app.com/docs/platform/get-started/cloud-functions)
 * [Hosting your Node.JS web application on Back4App servers](https://www.back4app.com/docs/node-js-web-server)
 
-#### Content ####
-* [Setup and Prerequisits](#Setup-and-Prerequisits)
-* [Editing and Building](#Editing-and-Building)
-* [Running Locally](#Running-Locally)
-* [Deploying](#Deploying)
-* [Code Examples](#Code-Examples)
+### Content ###
+- [Parse Server Development Template](#parse-server-development-template)
+    - [Content](#content)
+  - [Setup and Prerequisites](#setup-and-prerequisites)
+    - [Install Global Dependencies](#install-global-dependencies)
+    - [Server Configuration](#server-configuration)
+  - [Editing and Building](#editing-and-building)
+    - [Email Templates](#email-templates)
+  - [Running Locally](#running-locally)
+    - [Cloning a Remote Database](#cloning-a-remote-database)
+  - [Deploying](#deploying)
+    - [A) Deploy to Back4App.com](#a-deploy-to-back4appcom)
+    - [B) Deploy to remote server via SSH](#b-deploy-to-remote-server-via-ssh)
+  - [Code Examples](#code-examples)
+    - [Setup a and call a cloud function](#setup-a-and-call-a-cloud-function)
+  - [Customizing System Emails](#customizing-system-emails)
 
-## Setup and Prerequisits  ##
+## Setup and Prerequisites  ##
 
 * You'll need [Node.js](https://nodejs.org) installed on your system.
 * Run `$ npm install` on the root folder to install package's local dependencies.
 
-### Install Gloabl Dependencies ###
+### Install Global Dependencies ###
 
 1. Make sure you've installed globally [parse-server](https://www.npmjs.com/package/parse-server) and [express](https://www.npmjs.com/package/express) (`$ npm i -g parse-server express`). Then link them to the project: `$ npm link parse-server express`.
-2. You may install either [mongodb-runner](https://www.npmjs.com/package/mongodb-runner) (`$ npm i -g mongodb-runner`) to quickly start testing Parse Server, or [MongoDB Compass Community Edition](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/) to set up a local mongodb server instead. The latter enables your local PC to store real data instead of clearing it everytime the Parse Server stops with mongodb-runner.
-3. Optionals:
+2. Install -globally- the adapters required by parse-server. You'll find them in `config/parse-server.js`. For example: `$ npm i -g parse-server-mailgun`:
+
+    ```js
+    // parse-server.js
+    emailAdapter: {
+      module: "parse-server-mailgun",
+      ...
+    }
+    ```
+
+3. You may install either [mongodb-runner](https://www.npmjs.com/package/mongodb-runner) (`$ npm i -g mongodb-runner`) to quickly start testing Parse Server, or [MongoDB Compass Community Edition](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/) to set up a local mongodb server instead. The latter enables your local PC to store real data instead of clearing it every time the Parse Server stops with mongodb-runner.
+4. Optional:
    * You may want to install [parse-dashboard](https://www.npmjs.com/package/parse-dashboard) (`$ npm i -g parse-dashboard`) so you see and manage your server's data.
    * If you'll need to clone data from/to your dev and prod databases you'll need [mongodb](https://www.npmjs.com/package/mongodb) and [mongo-clone](https://www.npmjs.com/package/mongo-clone) (`$ npm i -g mongodb mongo-clone`)
 
@@ -42,6 +64,9 @@ You can set the server's configuration in `parse-server.config.js` and `parse-da
 
 Put your `.ts` source files for cloud code in the folder `src/`. The file `main.ts` will be the entry point. To build the code run `$ npm run build`. See Parse Server's [Cloud Code Guide](https://docs.parseplatform.org/cloudcode/guide/) for more information.
 
+### Email Templates ###
+Email templates are using a custom [Bootstrap](https://getbootstrap.com/) theme. Make sure the css files are built and updated by running `$ npm run scss`. They should be compiled into `/assets/templates/css`.
+
 ## Running Locally ##
 
 1. Start mongodb with `$ mongod.exe` or equivalent on MacOS (this may be already running if you installed MongoDB Compass) or mongodb-runner (`$ mongodb-runner start`).
@@ -49,15 +74,21 @@ Put your `.ts` source files for cloud code in the folder `src/`. The file `main.
 3. Run `$ npm run dashboard` to start the Dashboard. You can access it at [http://localhost:4040](http://localhost:4040).
 4. (Optional) To test the Express app you may need a service like [ngrok.io](http://ngrok.io) to expose your local server to the internet.
 
+### Cloning a Remote Database ##
+A local script has been included to make a local backup of your production database:
+
+1. Configure your database URIs in `config/databases.json`
+2. Run `$ npm run cloneRemoteDatabase`
+
 ## Deploying ##
 
 ### A) Deploy to Back4App.com ###
-[Back4App](https://back4app.com) privides free BaaS to host your Parse Server applications. You'll need an account to follow these steps.
+[Back4App](https://back4app.com) provides free BaaS to host your Parse Server applications. You'll need an account to follow these steps.
 
 1. Make sure you've installed the [Back4App CLI](https://blog.back4app.com/2017/01/20/cli-parse-server/) in your system.
 2. Follow the instructions to [link your local back4app project](https://www.back4app.com/docs/command-line-tool/connect-to-back4app).
 3. Run `$ b4a new` inside the folder `/build`*.
-4. Run `$ npm run deploy -- --b4a` to deploy your cloud code to your server on a [Back4App](https://back4app.com) account. The project will be compiled and uploaded immediatly.
+4. Run `$ npm run deploy -- --b4a` to deploy your cloud code to your server on a [Back4App](https://back4app.com) account. The project will be compiled and uploaded immediately.
 
 *If you've already created a project on [Back4App](https://back4app.com) you can run this series of commands from the project root folder:
 
@@ -80,7 +111,7 @@ To deploy your cloud code to a server with SSH (on Google Cloud for example), ru
 
 Once you've got the local server configured, add this code in `main.ts`:
 
-```javascript
+```js
 Parse.Cloud.define('test', request => {
 	const params = request.params;
 
@@ -94,9 +125,9 @@ Parse.Cloud.define('test', request => {
 });
 ```
 
-Add this somewhere in the client app ([browser](https://docs.parseplatform.org/js/guide/)/[iOS](https://docs.parseplatform.org/ios/guide/)/[Android](https://docs.parseplatform.org/android/guide/)) run this to init the SDK:
+Add this somewhere in the client app ([browser](https://docs.parseplatform.org/js/guide/)/[iOS](https://docs.parseplatform.org/ios/guide/)/[Android](https://docs.parseplatform.org/android/guide/)) run this to initialize the SDK:
 
-```javascript
+```js
 // Imports
 import * as Parse from 'parse';				// Don't forget to `$ npm i parse` and `$ npm i -D @types/parse`
 
@@ -110,12 +141,11 @@ const PARSE_SERVER_URL = 'localhost:1337/parse';
 Parse.initialize(PARSE_APP_ID, PARSE_JS_API_KEY);
 const parse = require('parse');				// For some reason this line is required
 parse.serverURL = PARSE_SERVER_URL;
-
 ```
 
 ...Then use this code in the client to call the function and get the result from the server:
 
-```javascript
+```js
 const params = {
 	title: 'Test',
 	message: 'Hi... is this working?'
@@ -137,3 +167,11 @@ Parse.Cloude.run('test', params).then(response => {
 ```
 
 For more information see the Parse Server's [Cloud Code Guide](https://docs.parseplatform.org/cloudcode/guide/).
+
+
+## Customizing System Emails ##
+Emails for resetting password and verifying emails are handled internally by Parse Server using an [email adapter](https://docs.parseplatform.org/parse-server/guide/#welcome-emails-and-email-verification). This setup is using the module [parse-server-mailgun](https://www.npmjs.com/package/parse-server-mailgun). You can change this configuration in `config/parse-server.config.js`.
+
+You can modify how these system emails look like by modifying their templates in the folder `/templates`.
+
+>**Important**: If you're deploying to [Back4App](https://help.back4app.com/hc/en-us/articles/360028152251-How-can-I-use-my-own-verification-email-tool-MAILGUN-) you will need to ask their support team to implement this configuration on their side. Contact the and send them the `parse-server.config.js` file.

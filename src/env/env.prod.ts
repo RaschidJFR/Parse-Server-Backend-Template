@@ -1,8 +1,7 @@
-// import mailgunCredentials from './credentials/mailgun';
-
 export const ENV = {
-	assetsPath: 'data-public',
-	debug: false,
-	isServer: true,
-	// mailgun: mailgunCredentials.prod
+  appHomeUrl: 'http://scope-pro.net/work',
+  assetsPath: 'data-public',
+  debug: false,
+  isServer: true,
+  production: true,
 };

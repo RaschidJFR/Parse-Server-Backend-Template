@@ -1,8 +1,9 @@
 // Note: Make sure directory structure is ok
 const Path = require('path');
-const BUILD_PATH = Path.resolve(__dirname + '/../build/cloud');
-const DATA_PUBLIC_PATH = Path.resolve(__dirname + '/../assets');
-const CONFIG_PATH = Path.resolve(__dirname + '/../config/ssh.config.json');
+const ROOT_FOLDER = Path.resolve(__dirname + '/..');
+const BUILD_PATH = Path.resolve(ROOT_FOLDER + '/build/cloud');
+const DATA_PUBLIC_PATH = Path.resolve(ROOT_FOLDER + '/assets');
+const CONFIG_PATH = Path.resolve(ROOT_FOLDER + '/config/ssh.config.json');
 
 const flags = require('node-flags');
 const toB4A = flags.get('b4a');
@@ -136,7 +137,7 @@ function copyDataPublicContent(source, destination, callback) {
 		callback();
 	}
 
-	console.log('copying %o to %o', 'assets', destination);
+	console.log('copying %o to %s', 'assets', destination);
 	const ncp = require('ncp').ncp;
 	ncp.limit = 1;
 
@@ -152,7 +153,7 @@ function copyDataPublicContent(source, destination, callback) {
 function copyPackageDotJson() {
 	console.log('copying package.json to ', BUILD_PATH);
 	const fs = require('fs');
-	let buffer = fs.readFileSync('package.json');
+	let buffer = fs.readFileSync(ROOT_FOLDER + '/package.json');
 	let text = buffer.toString();
 	let pkg = JSON.parse(text);
 
@@ -161,8 +162,7 @@ function copyPackageDotJson() {
 	if (moduleAlias) {
 		Object.keys(moduleAlias).forEach(k => {
 
-			let aliasPath = moduleAlias[k];
-			aliasPath = aliasPath.replace(BUILD_PATH.replace('./', ''), '');
+			let aliasPath = moduleAlias[k].replace('build/cloud/', '');
 			aliasPath = aliasPath.indexOf('/') == 0 ? aliasPath.slice(1) : aliasPath;
 
 			console.log('\tpackage.json: Rewriting alias %s => %s', moduleAlias[k], aliasPath);

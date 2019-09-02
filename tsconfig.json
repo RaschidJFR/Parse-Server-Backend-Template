@@ -6,6 +6,7 @@
 		"declaration": false,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
+		"typeRoots": ["types"],
 		"lib": [
 			"dom",
 			"es2015"
@@ -36,12 +37,11 @@
 	],
 	"exclude": [
 		"node_modules",
-		"src/library/**",
 		"src/**/*.spec.ts",
 		"src/**/__tests__/*.ts"
 	],
 	"compileOnSave": false,
 	"atom": {
 		"rewriteTsconfig": false
-	},
+	}
 }

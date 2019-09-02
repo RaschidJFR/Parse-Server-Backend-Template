@@ -1,4 +1,4 @@
 {
   "dev": "mongodb://localhost:27017/parse",
-  "prod": ""
+  "prod": "mongodb://localhost:27017/parse"
 }

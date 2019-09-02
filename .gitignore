@@ -23,7 +23,6 @@ dist/
 node_modules/
 tmp/
 temp/
-hooks/
 platforms/
 plugins/
 plugins/android.json
@@ -43,5 +42,5 @@ build/
 
 # Credentials
 ssh.config.json
-**/credentials/*.js
+**/credentials/*.[tj]s*
 !.vscode/launch.json

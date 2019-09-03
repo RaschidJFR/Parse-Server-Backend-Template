@@ -1,4 +1,4 @@
-# Parse Server Development Template #
+# Parse Server Backend Template
 
 This repository contains the configuration file and the cloud code files for running on a [Parse Server](https://docs.parseplatform.org/parse-server/guide/) v3.x backend.
 The package is meant to speed up testing and deployment for when you're working on Parse Server's cloud code.
@@ -10,9 +10,11 @@ More info:
 * [Deploy and call your first Cloud Code functions](https://www.back4app.com/docs/platform/get-started/cloud-functions)
 * [Hosting your Node.JS web application on Back4App servers](https://www.back4app.com/docs/node-js-web-server)
 
-### Content ###
-- [Parse Server Development Template](#parse-server-development-template)
-    - [Content](#content)
+**Content:**
+- [Parse Server Backend Template](#parse-server-backend-template)
+  - [Template Content](#template-content)
+    - [Suggested Folder Structure](#suggested-folder-structure)
+    - [Modules](#modules)
   - [Setup and Prerequisites](#setup-and-prerequisites)
     - [Install Global Dependencies](#install-global-dependencies)
     - [Server Configuration](#server-configuration)
@@ -26,13 +28,53 @@ More info:
   - [Code Examples](#code-examples)
     - [Setup a and call a cloud function](#setup-a-and-call-a-cloud-function)
   - [Customizing System Emails](#customizing-system-emails)
+  - [Credits](#credits)
 
-## Setup and Prerequisites  ##
+## Template Content
+
+### Suggested Folder Structure
+These folders have been pre-populated and configured for the described functions:
+
+```
+|-- assets            // Rresource folder for accessing in runtime
+  |-- templates       // EJS email tempaltes
+|
+|-- config            // Database and server configuration files
+  |-- credentials     // Credential files for server and database configuration
+  |-- templates       // Templates for system emails
+|
+|-- scripts           // Chore scripts (CI, deployment, etc)
+|-- src               // Main cloud code source
+  |-- main.ts         // Entry point for the ParseServer
+  |-- app.ts          // Entrey point for a secondary Express app
+  |-- env             // Environmental vars
+    |-- credentials   // Credentials to be accessed in runtime
+  |
+  |-- hooks           // Files for managing cloud functions and jobs
+  |-- modules         // Helper modules
+  |-- types           // Definition files. Useful for extending @types
+  |-- lib             // Shared library between frontend and backend (git-ignored)
+```
+
+### Modules
+A series of modules have been created for accomplishing common backend tasks. To use, just import and call the static classes' functions.
+
+| Module      | Exported class | Description                                                               |
+| ----------- | -------------- | ------------------------------------------------------------------------- |
+| auth.ts     | Auth           | Helper class for managing a super user and Roles.                         |
+| currency.ts | Currency       | Helper class with methods for retrieving and converting currencies.       |
+| files.ts    | Files          | Helper class for removing unlinked files from database objects.           |
+| jobs.ts     | Jobs           | Helper class for checking job status.                                     |
+| mail.ts     | Mail           | Helper class for sending emails.                                          |
+| setup.ts    | Config         | Helper class with functions for blanking and resetting the database data. |
+| stripe.ts   | Payment        | Helper class and functions for managing payments with Stripe.             |
+
+## Setup and Prerequisites
 
 * You'll need [Node.js](https://nodejs.org) installed on your system.
 * Run `$ npm install` on the root folder to install package's local dependencies.
 
-### Install Global Dependencies ###
+### Install Global Dependencies
 
 1. Make sure you've installed globally [parse-server](https://www.npmjs.com/package/parse-server) and [express](https://www.npmjs.com/package/express) (`$ npm i -g parse-server express`). Then link them to the project: `$ npm link parse-server express`.
 2. Install -globally- the adapters required by parse-server. You'll find them in `config/parse-server.js`. For example: `$ npm i -g parse-server-mailgun`:
@@ -50,7 +92,7 @@ More info:
    * You may want to install [parse-dashboard](https://www.npmjs.com/package/parse-dashboard) (`$ npm i -g parse-dashboard`) so you see and manage your server's data.
    * If you'll need to clone data from/to your dev and prod databases you'll need [mongodb](https://www.npmjs.com/package/mongodb) and [mongo-clone](https://www.npmjs.com/package/mongo-clone) (`$ npm i -g mongodb mongo-clone`)
 
-### Server Configuration ###
+### Server Configuration
 
 You can set the server's configuration in `parse-server.config.js` and `parse-dashboard.config.json`, inside the `/config` folder.
 
@@ -60,29 +102,29 @@ You can set the server's configuration in `parse-server.config.js` and `parse-da
 
 
 
-## Editing and Building ##
+## Editing and Building
 
 Put your `.ts` source files for cloud code in the folder `src/`. The file `main.ts` will be the entry point. To build the code run `$ npm run build`. See Parse Server's [Cloud Code Guide](https://docs.parseplatform.org/cloudcode/guide/) for more information.
 
-### Email Templates ###
+### Email Templates
 Email templates are using a custom [Bootstrap](https://getbootstrap.com/) theme. Make sure the css files are built and updated by running `$ npm run scss`. They should be compiled into `/assets/templates/css`.
 
-## Running Locally ##
+## Running Locally
 
 1. Start mongodb with `$ mongod.exe` or equivalent on MacOS (this may be already running if you installed MongoDB Compass) or mongodb-runner (`$ mongodb-runner start`).
 2. Use `$ npm start` to run the local Parse Server (project will build before launching the server). The server will be accessible on [http://localhost:1337/parse](http://localhost:1337/parse).
 3. Run `$ npm run dashboard` to start the Dashboard. You can access it at [http://localhost:4040](http://localhost:4040).
 4. (Optional) To test the Express app you may need a service like [ngrok.io](http://ngrok.io) to expose your local server to the internet.
 
-### Cloning a Remote Database ##
+### Cloning a Remote Database
 A local script has been included to make a local backup of your production database:
 
 1. Configure your database URIs in `config/databases.json`
 2. Run `$ npm run cloneRemoteDatabase`
 
-## Deploying ##
+## Deploying
 
-### A) Deploy to Back4App.com ###
+### A) Deploy to Back4App.com
 [Back4App](https://back4app.com) provides free BaaS to host your Parse Server applications. You'll need an account to follow these steps.
 
 1. Make sure you've installed the [Back4App CLI](https://blog.back4app.com/2017/01/20/cli-parse-server/) in your system.
@@ -100,14 +142,14 @@ $ b4a new
   > b                         # 'b' for blank project option
 ```
 
-### B) Deploy to remote server via SSH ###
+### B) Deploy to remote server via SSH
 
 To deploy your cloud code to a server with SSH (on Google Cloud for example), run `$ npm run deploy -- --ssh`.
 
 
-## Code Examples ##
+## Code Examples
 
-### Setup a and call a cloud function ###
+### Setup a and call a cloud function
 
 Once you've got the local server configured, add this code in `main.ts`:
 
@@ -169,9 +211,19 @@ Parse.Cloude.run('test', params).then(response => {
 For more information see the Parse Server's [Cloud Code Guide](https://docs.parseplatform.org/cloudcode/guide/).
 
 
-## Customizing System Emails ##
+## Customizing System Emails
 Emails for resetting password and verifying emails are handled internally by Parse Server using an [email adapter](https://docs.parseplatform.org/parse-server/guide/#welcome-emails-and-email-verification). This setup is using the module [parse-server-mailgun](https://www.npmjs.com/package/parse-server-mailgun). You can change this configuration in `config/parse-server.config.js`.
 
 You can modify how these system emails look like by modifying their templates in the folder `/templates`.
 
 >**Important**: If you're deploying to [Back4App](https://help.back4app.com/hc/en-us/articles/360028152251-How-can-I-use-my-own-verification-email-tool-MAILGUN-) you will need to ask their support team to implement this configuration on their side. Contact the and send them the `parse-server.config.js` file.
+
+## Credits
+
+Raschid J.F. Rafaelly
+<br>
+http://raschidjfr.dev
+<br>
+<hello@raschidjfr.dev>
+
+For the latest template version visit https://github.com/RaschidJFR/Parse-Server-CloudCode-Development-Unit.

@@ -51,13 +51,13 @@ module.exports = {
       templates: {
         passwordResetEmail: {
           subject: 'Password reset',
-          pathHtml: 'templates/password_reset_email.html',
-          pathPlainText: 'templates/password_reset_email.txt'
+          pathHtml: 'config/templates/password_reset_email.html',
+          pathPlainText: 'config/templates/password_reset_email.txt'
         },
         verificationEmail: {
           subject: 'Verify your email',
-          pathHtml: 'templates/verification_email.html',
-          pathPlainText: 'templates/verification_email.txt'
+          pathHtml: 'config/templates/verification_email.html',
+          pathPlainText: 'config/templates/verification_email.txt'
         }
       }
     }

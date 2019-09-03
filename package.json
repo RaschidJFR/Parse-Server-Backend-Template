@@ -62,8 +62,8 @@
 	},
 	"_moduleAliases": {
 		"@app/env": "build/cloud/env/env",
-		"@library": "build/cloud/library",
+		"@lib": "build/cloud/lib",
 		"@modules": "build/cloud/modules",
-		"@parse": "build/cloud/library/parse.server"
+		"@parse": "build/cloud/parse.server"
 	}
 }

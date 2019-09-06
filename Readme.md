@@ -19,7 +19,8 @@ More info:
     - [Install Global Dependencies](#install-global-dependencies)
     - [Server Configuration](#server-configuration)
   - [Editing and Building](#editing-and-building)
-    - [Email Templates](#email-templates)
+    - [Customizing System Emails and Pages](#customizing-system-emails-and-pages)
+      - [Building Styles](#building-styles)
   - [Running Locally](#running-locally)
     - [Cloning a Remote Database](#cloning-a-remote-database)
   - [Deploying](#deploying)
@@ -27,7 +28,6 @@ More info:
     - [B) Deploy to remote server via SSH](#b-deploy-to-remote-server-via-ssh)
   - [Code Examples](#code-examples)
     - [Setup a and call a cloud function](#setup-a-and-call-a-cloud-function)
-  - [Customizing System Emails](#customizing-system-emails)
   - [Credits](#credits)
 
 ## Template Content
@@ -106,8 +106,16 @@ You can set the server's configuration in `parse-server.config.js` and `parse-da
 
 Put your `.ts` source files for cloud code in the folder `src/`. The file `main.ts` will be the entry point. To build the code run `$ npm run build`. See Parse Server's [Cloud Code Guide](https://docs.parseplatform.org/cloudcode/guide/) for more information.
 
-### Email Templates
-Email templates are using a custom [Bootstrap](https://getbootstrap.com/) theme. Make sure the css files are built and updated by running `$ npm run scss`. They should be compiled into `/assets/templates/css`.
+### Customizing System Emails and Pages
+Emails and page templates for resetting password and verifying emails are handled internally by Parse Server. By using an [email adapter](https://docs.parseplatform.org/parse-server/guide/#welcome-emails-and-email-verification) you may modify how emails look; and by setting the property `customPages` in the server's config you can assign the desired html templates for the user-face pages. This package uses [parse-server-mailgun](https://www.npmjs.com/package/parse-server-mailgun) as email adapter. You can change this configuration in `config/parse-server.config.js`.
+
+You'll find these templates inside `/assets/templates/system`.
+
+>**Important**: If you're deploying to [Back4App](https://help.back4app.com/hc/en-us/articles/360028152251-How-can-I-use-my-own-verification-email-tool-MAILGUN-) or other Parse hosting service, you may need to ask the support team to implement this configuration on their side.
+
+
+#### Building Styles
+Email templates are implementing a simplified [Bootstrap](https://getbootstrap.com/) theme in runtime. Make sure the css files are built and updated by running `$ npm run build:scss`. They should be compiled into `/assets/templates/css`.
 
 ## Running Locally
 
@@ -210,13 +218,6 @@ Parse.Cloude.run('test', params).then(response => {
 
 For more information see the Parse Server's [Cloud Code Guide](https://docs.parseplatform.org/cloudcode/guide/).
 
-
-## Customizing System Emails
-Emails for resetting password and verifying emails are handled internally by Parse Server using an [email adapter](https://docs.parseplatform.org/parse-server/guide/#welcome-emails-and-email-verification). This setup is using the module [parse-server-mailgun](https://www.npmjs.com/package/parse-server-mailgun). You can change this configuration in `config/parse-server.config.js`.
-
-You can modify how these system emails look like by modifying their templates in the folder `/templates`.
-
->**Important**: If you're deploying to [Back4App](https://help.back4app.com/hc/en-us/articles/360028152251-How-can-I-use-my-own-verification-email-tool-MAILGUN-) you will need to ask their support team to implement this configuration on their side. Contact the and send them the `parse-server.config.js` file.
 
 ## Credits
 

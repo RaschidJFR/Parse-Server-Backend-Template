@@ -19,6 +19,13 @@ app.get('/', async (_req, res) => {
 
 // Start listening if on local server
 if (debug) {
+  const ENV = require('@app/env').ENV;
+  const express = require('express');
+
+  // Serve system page templates on `/action`
+  app.use('/action', express.static(ENV.assetsPath+'/templates/system/pages'));
+
+  // Start app
   app.listen(7007, () => console.log(`Development app listening on port ${7007}\n`));
 }
 

@@ -1,5 +1,5 @@
 {
-	"name": "scope-server",
+	"name": "parse-server-backend-template",
 	"devDependencies": {
 		"@types/clone-deep": "^4.0.1",
 		"@types/ejs": "^2.6.3",
@@ -27,6 +27,7 @@
 		"app": "cross-env NODE_ENV=development node build/cloud/app",
 		"build": "tsc --sourcemap",
 		"build:prod": "tsc",
+		"build:scss": "npx node-sass assets/templates/scss -o assets/templates/css",
 		"clean": "rm -r -f build/cloud",
 		"cloneRemoteDatabase": "node scripts/clone-remote-database",
 		"dashboard": "parse-dashboard --config config/parse-dashboard.config.json",
@@ -37,23 +38,12 @@
 		"prebuild": "npm run clean",
 		"predeploy": "npm run clean",
 		"postdeploy": "npm run build",
-		"sass": "npx node-sass assets/templates/scss -o assets/templates/css",
 		"server": "cross-env NODE_ENV=development npx parse-server config/parse-server.config.js"
 	},
 	"dependencies": {
-		"arr-filter-unique": "^1.1.2",
-		"array-average": "^0.1.2",
-		"array-filter-unique": "^2.2.0",
-		"assign-deep": "^1.0.1",
-		"clone-deep": "^4.0.1",
-		"deep-diff": "^1.0.2",
 		"ejs": "^2.6.2",
-		"googleapis": "^41.0.0",
-		"group-array": "^0.3.3",
 		"i18n-iso-countries": "^4.0.0",
 		"module-alias": "^2.2.0",
-		"moment": "^2.24.0",
-		"moment-business-days": "^1.1.3",
 		"nodemailer": "^6.2.1",
 		"parse-server-mailgun-adapter-template": "^1.1.7",
 		"stripchar": "^1.2.1",

@@ -41,6 +41,10 @@ logs/
 build/
 
 # Credentials
-ssh.config.json
-**/credentials/*.[tj]s*
+credentials/*
+
+!**/*.gitkeep
 !.vscode/launch.json
+
+# Built styles
+/assets/templates/css

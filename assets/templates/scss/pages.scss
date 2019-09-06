@@ -1,13 +1,11 @@
-// You can write your own style rules for mailing templates or you can
-// even import styles from a common library submodule to share the same
-// rules amongthe back and front ends.
-
+// This file is used on the server to theme emails sent to users
 @import 'node_modules/bootstrap/scss/functions';
 @import 'node_modules/bootstrap/scss/mixins';
 @import 'node_modules/bootstrap/scss/reboot';
 @import 'node_modules/bootstrap/scss/type';
 @import 'node_modules/bootstrap/scss/buttons';
 @import 'node_modules/bootstrap/scss/utilities';
+@import 'node_modules/bootstrap/scss/forms';
 
 a {
   color: $primary-color;

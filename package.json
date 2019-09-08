@@ -39,7 +39,7 @@
     "predeploy": "npm run clean",
     "postdeploy": "npm run build",
     "server": "cross-env NODE_ENV=development npx parse-server config/parse-server.config.js",
-    "snyk-protect": "snyk protect",
+    "snyk-protect": "npx snyk protect",
     "prepare": "npm run snyk-protect"
   },
   "dependencies": {

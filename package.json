@@ -51,7 +51,7 @@
     "stripchar": "^1.2.1",
     "stripe": "^7.4.0",
     "styliner": "^1.0.4",
-    "snyk": "^1.226.0"
+    "snyk": "^1.258.2"
   },
   "_moduleAliases": {
     "@app/env": "build/cloud/env/env",

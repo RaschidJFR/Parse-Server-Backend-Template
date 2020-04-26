@@ -1,7 +1,5 @@
 import { Twilio } from 'twilio';
 import * as generateRandomPassword from 'password-generator';
-import { Order } from '@lib/models/order/order';
-import { CallSession } from '@lib/models/call-session/call-session';
 import Parse = require('parse');
 
 export interface TwilioConfig {
@@ -51,23 +49,6 @@ export class AppTwilio {
 
   static async init() {
     await this.getConfig();
-
-    Parse.Cloud.define(`twilio:getCallNumber`, async request => {
-      const user = request.user;
-      const params: { orderId: string } = request.params as any;
-      const order = await Order.createWithoutData<Order>(params.orderId)
-        .fetchWithInclude(['deliveryMan.user' as any, 'sender'], { useMasterKey: true });
-
-      const isLogged = !!user && !!user.id || request.master;
-      const isRelatedToOrder = (user && user.id) === (order.sender && order.sender.id) ||
-        (user && user.id) === (order.deliveryMan && order.deliveryMan.user && order.deliveryMan.user.id);
-
-      if (!request.master && (!isLogged || !isRelatedToOrder)) {
-        throw new Error('unauthorized');
-      }
-
-      return CallSession.book(order.id);
-    });
 
     Parse.Cloud.define(`twilio:checkVerification`, async (request) => {
       const config = await AppTwilio.getConfig();

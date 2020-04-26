@@ -17,11 +17,11 @@ export default async function() {
 
 async function tryUpdateSchema(schema: Parse.Schema) {
   try {
-    await schema.save({ useMasterKey: true });
+    await schema.save();
   } catch (e) {
     console.warn(e);
     try {
-      await schema.update({ useMasterKey: true });
+      await schema.update();
     } catch (e) {
       console.warn(e);
     }

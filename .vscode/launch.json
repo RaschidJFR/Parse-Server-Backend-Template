@@ -25,13 +25,14 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch parse-server",                                                   // Run the node process directly
-      "program": "${workspaceFolder}\\node_modules\\parse-server\\bin\\parse-server",  // Don't forget to `$ npm link parse-server`,
+      "name": "Launch parse-server",                                                // Run the node process directly
+      "program": "${workspaceFolder}/node_modules/parse-server/bin/parse-server",   // Don't forget to `$ npm link parse-server`,
       "env": {
-        "NODE_ENV": "development"
+        "NODE_ENV": "development",
+        // "DB": "test",                                                                // Connect to remote dev database: 'prod' | 'test' | ''
       },
       "args": [
-        "${workspaceFolder}\\config\\parse-server.config.js"
+        "${workspaceFolder}/config/parse-server.config.js"
       ],
       "outFiles": [
         "${workspaceFolder}/build/cloud/**/*.js"

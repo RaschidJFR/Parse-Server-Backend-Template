@@ -51,6 +51,10 @@ export class Payment {
     return response.receipt_url;
   }
 
+  private static checkInited() {
+    if (!stripe) throw `Payment module not inited. Call Payment.init().`;
+  }
+
   /**
 	 * Creates a customer on Stripe
 	 * @returns The new customer's id
@@ -169,9 +173,5 @@ export class Payment {
     const cpyAttr = Object.assign({}, attributes);
     if (cpyAttr.source) delete cpyAttr.source;
     await stripe.customers.update(customerId, cpyAttr);
-  }
-
-  private static checkInited() {
-    if (!stripe) throw `Payment module not inited. Call Payment.init().`;
   }
 }

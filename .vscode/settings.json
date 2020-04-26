@@ -1,0 +1,12 @@
+{
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "jasmineExplorer.nodeArgv": [
+    "-r",
+    "ts-node/register"
+  ],
+  "jasmineExplorer.env": {
+    "NODE_ENV": "development",
+    "TESTING": "1",
+    "NO_TIMEOUT": "1"
+  }
+}

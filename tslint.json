@@ -14,10 +14,6 @@
     "deprecation": {
       "severity": "warn"
     },
-    "import-blacklist": [
-      true,
-      "parse"
-    ],
     "indent": [
       true,
       "spaces",
@@ -29,13 +25,18 @@
         140
       ]
     },
-    "member-ordering": {
-      "severity": "warning",
-      "options": {
-        "order": "instance-sandwich",
-        "alphabetize": true
+    "member-ordering": [
+      true,
+      {
+        "alphabetize": false,
+        "order": [
+          "static-field",
+          "instance-field",
+          "static-method",
+          "instance-method"
+        ]
       }
-    },
+    ],
     "no-inferrable-types": [
       true,
       "ignore-params"

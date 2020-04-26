@@ -1,11 +1,21 @@
 import { Auth } from './auth';
 
 export class Setup {
+  static callback: () => void;
 
   /**
-	 * @param superuser If provided, a superuser will be created
+	 * Override this class to setup your custom schemas
 	 */
-  static initCloudJobs(superuser?: { password: string, username: string, }) {
+  protected static createSchemas(): Promise<any> {
+    return Promise.resolve();
+  }
+
+  /**
+	 * @param superuser If provided, a superuser will be created when setting up database
+   * @param callback Function to call whenever database setup is executed
+	 */
+  static initCloudJobs(superuser?: { password: string, username: string, }, callback?: () => void) {
+    this.callback = callback;
     /**
 		 * Delete and setup all objects and classes in database
 		 */
@@ -21,6 +31,13 @@ export class Setup {
           log += resultLog;
           request.message(log);
         });
+    });
+
+    Parse.Cloud.define('blankDatabase', request => {
+      if (!request.master)
+        throw new Error('Unauthorized');
+
+      return Parse.Cloud.startJob('blankDatabase', {});
     });
   }
 
@@ -52,8 +69,9 @@ export class Setup {
 
     if (errors.length > 0)
       throw (log);
-    else
-      return log;
+
+    if (this.callback) this.callback();
+    return log;
   }
 
   /**
@@ -115,13 +133,5 @@ export class Setup {
         log += 'database deleted\n';
         return log;
       });
-  }
-
-
-  /**
-	 * Override this class to setup your custom schemas
-	 */
-  protected static createSchemas(): Promise<any> {
-    return Promise.resolve();
   }
 }

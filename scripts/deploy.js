@@ -44,18 +44,13 @@ function deployToBack4App(filePath) {
 		// Upload using b4a.exe
 		const { spawn } = require('child_process');
 		const command = 'b4a'
-		const args = 'deploy'.split(' ');
+		const args = 'deploy -f'.split(' ');
 
 		console.log(`\x1b[32m> ${command} ${args.join(' ')}\x1b[0m`);
 		let child = spawn(command, args, { cwd: execPAth });
 
-		child.stdout.on('data', (data) => {
-			console.log(`${data}`);
-		});
-
-		child.stderr.on('data', (data) => {
-			console.log(`\x1b[31m${data}\x1b[0m`);
-		});
+		child.stdout.pipe(process.stdout);
+		child.stderr.pipe(process.stderr);
 
 		child.on('close', (code) => {
 			console.log(`\x1b[32mDone!: ${code}\x1b[0m\n`);

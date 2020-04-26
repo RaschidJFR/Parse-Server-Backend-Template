@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.json",
+  "allowSyntheticDefaultImports": true,
+  "emitDecoratorMetadata": true,
+  "experimentalDecorators": true,
+  "exclude": [
+    "spec/**/*",
+    "src/**/*.test.ts"
+  ]
+}

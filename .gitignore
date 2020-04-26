@@ -9,7 +9,6 @@
 log.txt
 *.sublime-project
 *.sublime-workspace
-.vscode/*
 npm-debug.log*
 
 .idea/
@@ -36,6 +35,7 @@ UserInterfaceState.xcuserstate
 
 # Parse Server Cloud Code
 logs/
+test_logs/
 .parse.local
 .parse.project
 build/
@@ -44,7 +44,9 @@ build/
 credentials/*
 
 !**/*.gitkeep
-!.vscode/launch.json
 
 # Built styles
 /assets/templates/css
+
+test-results
+.env

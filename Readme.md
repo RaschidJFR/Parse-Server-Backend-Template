@@ -3,7 +3,7 @@
 This repository contains the configuration file and the cloud code files for running on a [Parse Server](https://docs.parseplatform.org/parse-server/guide/) v3.x backend.
 The package is meant to speed up testing and deployment for when you're working on Parse Server's cloud code.
 
-This package contains 2 apps: The Backend's cloud code and an Express app to handle webhooks. Their entry points are the files `main.ts` and `app.ts` respectively (Those names are requested in order to work on a hosted app on [Back4App](https://back4app.com)).
+This package contains 2 apps: The Backend's cloud code and an independent Express app for web hosting and hooks. Their entry points are the files `main.ts` and `app.ts` respectively (those names are requested in order to work on an app hosted on [Back4App](https://back4app.com)).
 
 More info:
 

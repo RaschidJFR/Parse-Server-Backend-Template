@@ -128,12 +128,12 @@ export class Auth {
 		 * @param depth Number of nested queries to go into. Default = `2`
 		 * @returns `boolean`
 	   */
-    Parse.Cloud.define('role:hasUser', request => {
-      const params: {
-        depth?: number
-        role: Parse.Pointer,
-        user: Parse.Pointer,
-      } = request.params;
+    Parse.Cloud.define('role:hasUser', (request: Parse.Cloud.FunctionRequest<{
+      depth?: number
+      role: Parse.Pointer,
+      user: Parse.Pointer,
+    }>) => {
+      const params = request.params;
 
       const user = Parse.User.createWithoutData<Parse.User>(params.user.objectId);
       const role = Parse.Role.createWithoutData<Parse.Role>(params.role.objectId);

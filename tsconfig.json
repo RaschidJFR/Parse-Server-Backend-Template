@@ -1,15 +1,11 @@
 {
 	"compilerOptions": {
 		"allowJs": true,
-		"allowSyntheticDefaultImports": true,
-		"baseUrl": "src",
+		"baseUrl": ".",
 		"declaration": false,
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
-    "typeRoots": ["types"],
-    "types": [
-      "@types/parse",
-      "@types/node"
+    "typeRoots": [
+      "node_modules/@types",
+      "src/types"
     ],
 		"lib": [
 			"dom",
@@ -23,26 +19,24 @@
 		"resolveJsonModule": true,
 		"paths": {
 			"@app/env": [
-				"env/env"
+				"src/env/env"
 			],
 			"@lib/*": [
-				"lib/*"
+				"src/lib/*"
 			],
 			"@modules/*": [
-				"modules/*"
-			],
-			"@parse": [
-				"parse.server"
-			]
+				"src/modules/*"
+      ],
+      "@spec/*": [
+        "spec/*"
+      ]
 		}
 	},
 	"include": [
-		"src/**/*"
+    "src/**/*"
 	],
 	"exclude": [
 		"node_modules",
-		"src/**/*.spec.ts",
-		"src/**/__tests__/*.ts"
 	],
 	"compileOnSave": false,
 	"atom": {

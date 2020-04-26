@@ -7,28 +7,13 @@ const MOUNT_PATH = '/parse';
 const PUBLIC_URL = `http://localhost:1337${MOUNT_PATH}`;
 const PAGE_TEMPLATE_PUBLIC_URL = '//localhost:7007/action';
 
-// Configure your prod and dev databases in the file `databases.json`
-
-let DATABASES_CONFIG = {
-  dev: `mongodb://localhost:27017${MOUNT_PATH}`,
-  prod: `mongodb://localhost:27017${MOUNT_PATH}`
-}
-
-try {
-  DATABASES_CONFIG = require('./databases.json');
-} catch (e) {
-  console.warn('Could not read file config/databases.json. Using default database uri: %s\n. Expected file content:\n\x1b[0m\n%o\n',
-    DATABASES_CONFIG.dev, DATABASES_CONFIG);
-}
-
-
 // Configure mailgun credentials in `credentials/mailgun.json`
 
 let MAILGUN_CONFIG = {
   apiKey: 'yourmailgunapikey',
   domain: 'noreply@mg.yourdomain.com',
   from: 'MyApp Bot'
-}
+};
 
 try {
   MAILGUN_CONFIG = require('./credentials/mailgun.json');
@@ -44,9 +29,11 @@ module.exports = {
   masterKey: MASTER_KEY,
   cloud: './build/cloud/main.js',
   mountPath: MOUNT_PATH,
-  databaseURI: DATABASES_CONFIG.dev,
+  databaseURI: `mongodb://localhost:27017/${this.mountPath}`,
   serverURL: PUBLIC_URL,
   publicServerURL: PUBLIC_URL,
+  mountGraphQL: true,
+  mountPlayground: true,
 
   // Custom Pages
   customPages: {
@@ -56,7 +43,7 @@ module.exports = {
     linkSendFail: `${PAGE_TEMPLATE_PUBLIC_URL}/link_send_fail.html`,
     linkSendSuccess: `${PAGE_TEMPLATE_PUBLIC_URL}/link_send_success.html`,
     passwordResetSuccess: `${PAGE_TEMPLATE_PUBLIC_URL}/password_reset_success.html`,
-    verifyEmailSuccess: `${PAGE_TEMPLATE_PUBLIC_URL}/verify_email_success.html`,
+    verifyEmailSuccess: `${PAGE_TEMPLATE_PUBLIC_URL}/verify_email_success.html`
   },
 
   // Custom Email Templates
@@ -82,7 +69,7 @@ module.exports = {
     }
   },
 
-  verbose: process.env.NODE_ENV === 'development',
+  verbose: process.env.NODE_ENV === 'development' && process.env.VERBOSE !== '0' && !process.env.TESTING,
   verifyUserEmails: true,
   preventLoginWithUnverifiedEmail: false
 };

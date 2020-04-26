@@ -1,0 +1,77 @@
+image: node:10.15.3
+definitions:
+  caches:
+    git-modules: .git/modules
+  services:
+    mongo:
+      image: mongo
+  steps:
+    - step: &step-build-prod
+        name: Build Prod
+        caches:
+          - node
+          - git-modules
+        artifacts:
+          - build/**
+        script:
+          - git submodule update --recursive --init
+          - npm i
+          - npm run build:prod
+    - step: &step-test-local
+        name: Test (Local MongoDB)
+        caches:
+          - node
+          - git-modules
+        artifacts:
+          - build/**
+          - test-results/**
+        services:
+          - mongo
+        script:
+          - git submodule update --recursive --init
+          - npm i
+          - npm i -g parse-server-mailgun parse-server express
+          - npm link parse-server
+          - npm link express
+          - npm test
+    - step: &step-test-live
+        <<: *step-test-local
+        name: Test (Live Database)
+        script:
+          - git submodule update --recursive --init
+          - npm i
+          - npm i -g parse-server-mailgun parse-server express
+          - npm link parse-server
+          - npm link express
+          - DB=prod npm test
+
+    - step: &step-deploy-test
+        name: Deploy to Back4App (Test)
+        deployment: Test
+        script:
+          - npm i flags
+          - mv build _build
+          - node scripts/b4a-cli-setup --key=$B4A_ACCOUNT_KEY --project="$B4A_PROJECT_NAME"
+          - cp -r _build/** build
+          - node scripts/deploy --b4a
+pipelines:
+  custom:
+    deploy-to-test: &pipe-deploy-test
+      - step: *step-build-prod
+      - step: *step-test-local
+      - step: *step-deploy-test
+    deploy-to-production: &pipe-deploy-prod
+      - step: *step-build-prod
+      - step: *step-test-local
+      - step:
+          <<: *step-deploy-test
+          name: Deploy to Back4App (Live)
+          deployment: Production
+  pull-requests:
+    feature/*: *pipe-deploy-test
+    hotfix/*: *pipe-deploy-test
+    bugfix/*: *pipe-deploy-test
+  branches:
+    release/*: *pipe-deploy-test
+    stable: *pipe-deploy-prod
+

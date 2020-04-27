@@ -50,7 +50,9 @@
     "mongodb-runner:stop": "mongodb-runner stop",
     "prebuild": "npm run clean",
     "server": "cross-env NODE_ENV=development npx parse-server config/parse-server.config.js",
-    "test": "npx jasmine-ts"
+    "test": "npx jasmine-ts",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "ejs": "^2.6.2",
@@ -62,12 +64,14 @@
     "password-generator": "^2.2.3",
     "stripe": "^7.4.0",
     "styliner": "^1.0.4",
-    "twilio": "^3.34.0"
+    "twilio": "^3.34.0",
+    "snyk": "^1.313.1"
   },
   "_moduleAliases": {
     "@app/env": "build/cloud/env/env",
     "@lib": "build/cloud/lib",
     "@modules": "build/cloud/modules",
     "parse": "build/cloud/parse.server"
-  }
+  },
+  "snyk": true
 }

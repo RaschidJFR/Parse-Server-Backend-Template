@@ -1,13 +1,14 @@
 
 // Add here your app's core config variables
 
-const APP_ID = 'app-id';
+const APP_ID = '7tIc9AZ2HJAs9ICNGEsAh9xDqBWid6fzfzXICp4Z';
 const MASTER_KEY = 'master-key';
 const MOUNT_PATH = '/parse';
 const PUBLIC_URL = `http://localhost:1337${MOUNT_PATH}`;
 const PAGE_TEMPLATE_PUBLIC_URL = '//localhost:7007/action';
 
 // Configure mailgun credentials in `credentials/mailgun.json`
+// For testing locally system emails
 
 let MAILGUN_CONFIG = {
   apiKey: 'yourmailgunapikey',
@@ -18,7 +19,8 @@ let MAILGUN_CONFIG = {
 try {
   MAILGUN_CONFIG = require('./credentials/mailgun.json');
 } catch (e) {
-  console.error('\x1b[33mCould not read file \'config/credentials/mailgun.json\'. Expected file content:\n\x1b[0m\n%o\n', MAILGUN_CONFIG);
+  console.error('\x1b[33mCould not read file \'config/credentials/mailgun.json\'. ' +
+    'Expected file content:\n\x1b[0m\n%o\n\nSystem emails will not be available\n', MAILGUN_CONFIG);
 }
 
 // Export configuration
@@ -29,7 +31,7 @@ module.exports = {
   masterKey: MASTER_KEY,
   cloud: './build/cloud/main.js',
   mountPath: MOUNT_PATH,
-  databaseURI: `mongodb://localhost:27017/${this.mountPath}`,
+  databaseURI: `mongodb://localhost:27017${MOUNT_PATH}`,
   serverURL: PUBLIC_URL,
   publicServerURL: PUBLIC_URL,
   mountGraphQL: true,
@@ -69,7 +71,10 @@ module.exports = {
     }
   },
 
-  verbose: process.env.NODE_ENV === 'development' && process.env.VERBOSE !== '0' && !process.env.TESTING,
+  // Use custom file adapter
+  filesAdapter: process.env.USE_CUSTOM_FILEADAPTER ? require('./file-adapter.config')(APP_ID) : undefined,
+
+  verbose: process.env.NODE_ENV === 'development' && process.env.VERBOSE === '1' && !process.env.TESTING,
   verifyUserEmails: true,
   preventLoginWithUnverifiedEmail: false
 };

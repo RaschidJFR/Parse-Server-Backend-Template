@@ -24,7 +24,7 @@ export namespace Mail {
 
   export interface MailModuleConfig {
     /**
-		 * Relative path of default .css file from `templatePath`
+		 * Path to default .css file, relative to `templatePath`
 		 */
     defaultCss?: string,
     defaultService?: 'mailgun' | 'smtp'
@@ -32,6 +32,7 @@ export namespace Mail {
 		 * Sender's email: Name<no-reply@domain.com>
 		 */
     from: string,
+    /** @deprecated Set STMP Mailgun settings in `nodemailerConfig.service = 'Mailgun'` instead */
     mailgunConfig?: {
       /**
 			 * Your mailgun key
@@ -54,11 +55,9 @@ export namespace Mail {
       port?: number,
       secure?: boolean,
       /**
-			 * You can use this parameter to omit params `host`/`port`/`secure`.
-			 *
-			 * `'Gmail' | 'Godaddy' | 'Hotmail' | 'Mailgun' | 'Mandrill' | 'Outlook365' | 'Yahoo',`
+			 * You can use this parameter to omit **STMP** configuration params `host`/`port`/`secure`.
 			 */
-      service?: string,
+      service?: 'Gmail' | 'Godaddy' | 'Hotmail' | 'Mailgun' | 'Mandrill' | 'Outlook365' | 'Yahoo',
     },
     /**
 		 * Function to get the required OAuth2 tokens every time
@@ -66,7 +65,7 @@ export namespace Mail {
 		 * */
     oauth2TokenFunction?: () => Promise<OAuth2>,
     /**
-		 * Folder with .ejs template files
+		 * Local folder with .ejs template files
 		 */
     templatePath: string,
   }
@@ -78,7 +77,24 @@ export namespace Mail {
       data: any,
       file: string,
     },
-    to: string,
+    to: string | string[],
+  }
+
+  export async function getMockSMPTConfig() {
+    const account = await nodemailer.createTestAccount();
+    const auth = {
+      user: account.user,
+      pass: account.pass
+    };
+
+    console.log('Created Ethereal virtual account for SMTP testing.\n' +
+      'You can check the caught messages at https://ethereal.email/messages .\n' +
+      'Account details: \n', account);
+
+    return {
+      ...account.smtp,
+      auth
+    };
   }
 
   export async function sendEmail(params: SendEmailParams): Promise<any> {
@@ -129,9 +145,43 @@ export namespace Mail {
 
     console.log('Inited Mail module\n', Mail.config);
   }
+
+  /**
+   * Get SMTP configuration from Dashboard's Config
+   */
+  export async function getSMTPConfig() {
+
+    const config = await Parse.Config.get({ useMasterKey: true });
+    const user: string = config.get('mail_smtp_user');
+    const pass: string = config.get('mail_smtp_password');
+    const host: string = config.get('mail_smtp_host');
+    const port: number = config.get('mail_smtp_port');
+
+    await Parse.Config.save({
+      mail_smtp_user: user || '',
+      mail_smtp_password: pass || '',
+      mail_smtp_host: host || '',
+      mail_smtp_port: port || 587,
+    }, {
+      mail_smtp_user: true,
+      mail_smtp_password: true,
+      mail_smtp_host: true,
+      mail_smtp_port: true,
+    });
+
+    return {
+      auth: {
+        user,
+        pass
+      },
+      host,
+      port
+    };
+  }
+
 }
 
-async function sendMailSMTP(params: { html: string, subject: string, to: string, }): Promise<any> {
+async function sendMailSMTP(params: { html: string, subject: string, to: string | string[], }): Promise<any> {
   console.log(`Send email "%o" to %o`, params.subject, params.to);
 
   // Refresh access token (if using Auth2)
@@ -155,3 +205,4 @@ async function sendMailSMTP(params: { html: string, subject: string, to: string,
     });
   });
 }
+

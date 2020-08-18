@@ -1,7 +1,7 @@
 
 // Add here your app's core config variables
 
-const APP_ID = '7tIc9AZ2HJAs9ICNGEsAh9xDqBWid6fzfzXICp4Z';
+const APP_ID = 'app-id';
 const MASTER_KEY = 'master-key';
 const MOUNT_PATH = '/parse';
 const PUBLIC_URL = `http://localhost:1337${MOUNT_PATH}`;

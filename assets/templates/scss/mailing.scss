@@ -1,21 +1,28 @@
 // You can write your own style rules for mailing templates or you can
 // even import styles from a common library submodule to share the same
-// rules amongthe back and front ends.
+// rules among the back and front ends.
 
-@import 'node_modules/bootstrap/scss/functions';
-@import 'node_modules/bootstrap/scss/mixins';
+@import 'variables';
+@import 'theme';
+
+// Load only the required modules from Bootstrap
+
+@import 'node_modules/bootstrap/scss/buttons';
+@import 'node_modules/bootstrap/scss/grid';
 @import 'node_modules/bootstrap/scss/reboot';
 @import 'node_modules/bootstrap/scss/type';
-@import 'node_modules/bootstrap/scss/buttons';
-@import 'node_modules/bootstrap/scss/utilities';
+@import 'node_modules/bootstrap/scss/utilities/background';
+@import 'node_modules/bootstrap/scss/utilities/text';
+@import 'node_modules/bootstrap/scss/utilities/spacing';
 
-a {
-  color: $primary-color;
+@import 'elements';
+
+.container {
+  font-family: $font-macondo !important;
+  color: $light !important;
 }
 
-h1,
-h2,
-h3,
-h4{
-  margin-bottom: $spacer * 2;
+img.logo {
+  width: 200px;
+  height: 200px;
 }

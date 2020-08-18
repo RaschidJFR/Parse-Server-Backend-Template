@@ -1,0 +1,22 @@
+// Import this file after Boostrap to be able to call its features.
+
+a {
+  color: $secondary;
+}
+
+strong {
+  color: $secondary;
+}
+
+img.logo {
+  width: 250px;
+  height: 250px;
+}
+
+.btn-primary {
+  background-color: theme-color-level('primary', 5);
+
+  &:hover {
+    background-color: theme-color-level('primary', 10);
+  }
+}

@@ -1,29 +1,30 @@
-// Default Credentials for Admin
-export const DEFAULT_ADMIN_ROLE = 'SuperUser';
+// Default Credentials for Super Admin
+export let DEFAULT_ADMIN_ROLE = 'SuperAdmin';
 
 export class Auth {
 
-  static async createSuperUser(credentials: { password: string, username: string, }): Promise<Parse.User> {
-    console.log('create super user');
-
-    // Create user
-    const user = await new Parse.User()
-      .save({
-        username: credentials.username,
-        password: credentials.password
-      }, { useMasterKey: true });
-
+  static async createSuperAdmin(defaultAdminRoleName = DEFAULT_ADMIN_ROLE): Promise<Parse.Role> {
+    console.log('create super admin role');
+    DEFAULT_ADMIN_ROLE = defaultAdminRoleName;
 
     // Create SuperUser role
-    let acl = new Parse.ACL();
+    const acl = new Parse.ACL();
     acl.setPublicWriteAccess(false);
     acl.setPublicReadAccess(true);
 
-    let role = new Parse.Role(DEFAULT_ADMIN_ROLE, acl);
-    role.getUsers().add(user)
-    await role.save(undefined, { useMasterKey: true });
+    const role = new Parse.Role(defaultAdminRoleName, acl);
+    try {
+      await role.save(null, { useMasterKey: true });
+    } catch (e) {
+      if (e.code === Parse.Error.DUPLICATE_VALUE) {
+        console.log('SuperAdmin role already created');
+      } else {
+        console.warn('Could not create superuser role:' + e);
+        throw e;
+      }
+    }
 
-    return user;
+    return role;
   }
 
   /**

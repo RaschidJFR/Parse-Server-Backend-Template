@@ -4,7 +4,7 @@ definitions:
     git-modules: .git/modules
   services:
     mongo:
-      image: mongo
+      image: mongo:3.0.0
   steps:
     - step: &step-build-prod
         name: Build Prod
@@ -13,6 +13,7 @@ definitions:
           - git-modules
         artifacts:
           - build/**
+          - assets/**
         script:
           - git submodule update --recursive --init
           - npm i
@@ -24,13 +25,15 @@ definitions:
           - git-modules
         artifacts:
           - build/**
+          - assets/**
           - test-results/**
+          - coverage/**
         services:
           - mongo
         script:
           - git submodule update --recursive --init
           - npm i
-          - npm i -g parse-server-mailgun parse-server express
+          - npm i -g parse-server-mailgun@2.4.15 parse-server@3.10.0 express@4.17.1
           - npm link parse-server
           - npm link express
           - npm test
@@ -40,7 +43,7 @@ definitions:
         script:
           - git submodule update --recursive --init
           - npm i
-          - npm i -g parse-server-mailgun parse-server express
+          - npm i -g parse-server-mailgun@2.4.15 parse-server@3.10.0 express@4.17.1
           - npm link parse-server
           - npm link express
           - DB=prod npm test

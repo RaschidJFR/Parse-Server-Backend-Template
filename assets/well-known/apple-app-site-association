@@ -1,0 +1,15 @@
+{
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appID": "TEAMID.dev.raschidjfr.appid",
+                "paths": ["/join/*"]
+            },
+            {
+                "appID": "OTHERTEAMID.dev.raschidjfr.otherapp",
+                "paths": ["/join/*"]
+            }
+        ]
+    }
+}

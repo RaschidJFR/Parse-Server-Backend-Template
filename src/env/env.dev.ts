@@ -3,7 +3,8 @@ export const environment = {
   debug: true,
   isServer: true,
   production: false,
-  webhooks: {
-    baseUrl: 'http://127.0.0.1:7007'
+  serverUrl: 'http://localhost:7007',
+  proxy: {
+    files: 'http://localhost:1337/myapp/files'
   }
 };

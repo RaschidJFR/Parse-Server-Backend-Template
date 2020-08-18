@@ -1,19 +1,39 @@
-// This file is used on the server to theme emails sent to users
-@import 'node_modules/bootstrap/scss/functions';
-@import 'node_modules/bootstrap/scss/mixins';
+/**
+* Style sheet for public pages
+*/
+
+// Imports to overwrite Bootstrap's variables
+
+@import 'variables';
+@import 'theme';
+
+// Load the required modules from Bootstrap
+
+@import 'node_modules/bootstrap/scss/root';
 @import 'node_modules/bootstrap/scss/reboot';
 @import 'node_modules/bootstrap/scss/type';
 @import 'node_modules/bootstrap/scss/buttons';
 @import 'node_modules/bootstrap/scss/utilities';
 @import 'node_modules/bootstrap/scss/forms';
+@import 'node_modules/bootstrap/scss/grid';
 
-a {
-  color: $primary-color;
+// Other imports
+
+@import '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css';
+@import 'elements';
+
+// Custom properties
+
+body {
+  background-color: $dark;
+  min-height: 100vh;
+
+  >.container {
+    @extend .bg-primary;
+  }
 }
-
-h1,
-h2,
-h3,
-h4{
-  margin-bottom: $spacer * 2;
+@media screen and (max-width: 768px) {
+  body {
+    background-color: var(--primary);
+  }
 }

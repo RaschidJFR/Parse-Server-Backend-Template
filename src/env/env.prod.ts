@@ -3,7 +3,8 @@ export const environment = {
   debug: false,
   isServer: true,
   production: true,
-  webhooks: {
-    baseUrl: 'https://your-app-live.back4app.io'
+  serverUrl: 'https://myapp.back4app.io',
+  proxy: {
+    files: 'https://parsefiles.back4app.com'
   }
 };

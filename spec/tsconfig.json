@@ -3,5 +3,8 @@
   "include": [
     "../spec/**/*",
     "../src/**/*"
-  ]
+  ],
+  "compilerOptions": {
+    "preserveSymlinks": true
+  }
 }

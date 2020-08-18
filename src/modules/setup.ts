@@ -4,17 +4,9 @@ export class Setup {
   static callback: () => void;
 
   /**
-	 * Override this class to setup your custom schemas
-	 */
-  protected static createSchemas(): Promise<any> {
-    return Promise.resolve();
-  }
-
-  /**
-	 * @param superuser If provided, a superuser will be created when setting up database
    * @param callback Function to call whenever database setup is executed
 	 */
-  static initCloudJobs(superuser?: { password: string, username: string, }, callback?: () => void) {
+  static initCloudJobs(callback?: () => void) {
     this.callback = callback;
     /**
 		 * Delete and setup all objects and classes in database
@@ -25,7 +17,7 @@ export class Setup {
       return Setup.resetDatabase()
         .then(resultLog => {
           log += resultLog;
-          return Setup.initDatabase(superuser);
+          return Setup.initDatabase();
         })
         .then(resultLog => {
           log += resultLog;
@@ -45,27 +37,18 @@ export class Setup {
 	 * Creates all needed schemas and default values for this application
 	 * on the database.
 	 */
-  static async initDatabase(defaultSuperuserCredentials?: { password: string, username: string, }): Promise<string> {
+  static async initDatabase(): Promise<string> {
     let log = '';
     let errors = [];
 
-    if (defaultSuperuserCredentials) await Auth.createSuperUser(defaultSuperuserCredentials)
+    await Auth.createSuperAdmin()
       .catch(error => {
         console.error(error);
         log += 'error: ' + (error as any).message + '\n';
         errors.push((error as any).message);
         return null;
-      })
+      });
 
-
-    log += 'Creating schemas\n'
-    await this.createSchemas()
-      .catch(error => {
-        console.error(error);
-        errors.push((error as any).message);
-        log += 'error: ' + (error as any).message + '\n';
-        return null;
-      })
 
     if (errors.length > 0)
       throw (log);

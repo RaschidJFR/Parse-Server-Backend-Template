@@ -1,7 +1,7 @@
 console.log('Load envars from file .env');
 require('dotenv').config();
 process.env.TESTING = '1';
-process.env.NODE_ENV='development';
+process.env.NODE_ENV = 'development';
 
 // Path Aliases
 // ------------
@@ -25,6 +25,18 @@ require('module-alias/register');
 import * as moduleAlias from 'module-alias';
 moduleAlias.addAlias('@spec', __dirname + '/..');
 
+// Config Jasmine
+// --------------
+
+jasmine.DEFAULT_TIMEOUT_INTERVAL = process.env.NO_TIMEOUT ? 1000e3 : 10000;
+
+if (process.env.CI) {
+  const JUnitReporter = require('jasmine-reporters').JUnitXmlReporter;
+  jasmine.getEnv().addReporter(new JUnitReporter({
+    savePath: 'test-results'
+  }));
+}
+
 
 // Init Parse SDK
 // --------------
@@ -45,29 +57,15 @@ beforeAll(async done => {
   done();
 });
 
-afterAll(async done => {
-  if (!process.env.DB) {
-    console.log('Destroy all server data');
-    await server.destroyAllDataPermanently();
-  } else {
-    console.log('Skip destroy data from remote database');
-  }
-  done();
-});
-
-
-// Config Jasmine
-// --------------
-
-jasmine.DEFAULT_TIMEOUT_INTERVAL = process.env.NO_TIMEOUT ? 1000e3 : 10000;
-
-if (process.env.CI) {
-  const JUnitReporter = require('jasmine-reporters').JUnitXmlReporter;
-  jasmine.getEnv().addReporter(new JUnitReporter({
-    savePath: 'test-results'
-  }));
-}
-
+// afterAll(async done => {
+//   if (!process.env.DB) {
+//     console.log('Destroy all server data');
+//     await server.destroyAllDataPermanently();
+//   } else {
+//     console.log('Skip destroy data from remote database');
+//   }
+//   done();
+// });
 
 // Handy Functions
 // ---------
@@ -81,3 +79,8 @@ export function sleep(ms = 100) {
     setTimeout(resolve, ms);
   });
 }
+
+// Model Functions
+// ---------------
+
+// Write helper functions for your models here

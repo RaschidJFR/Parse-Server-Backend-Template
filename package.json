@@ -60,7 +60,7 @@
     "node-gcm": "^1.0.2",
     "nodemailer": "^6.2.1",
     "parse-server-mailgun": "^2.4.15",
-    "password-generator": "^2.2.3",
+    "password-generator": "^2.3.0",
     "stripe": "^7.4.0",
     "styliner": "^1.0.4",
     "twilio": "^3.34.0"

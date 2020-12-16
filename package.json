@@ -49,7 +49,9 @@
     "postinstall": "cd node_modules/parse-server && npm i",
     "server": "cross-env NODE_ENV=development npx parse-server config/parse-server.config.js",
     "test": "npm run mongo && npx jasmine-ts",
-    "test:ci": "npx jasmine-ts"
+    "test:ci": "npx jasmine-ts",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "axios": "^0.20.0",
@@ -66,7 +68,8 @@
     "serialize-error": "^7.0.1",
     "styliner": "^1.0.4",
     "twilio": "^3.54.0",
-    "xml2js": "^0.4.23"
+    "xml2js": "^0.4.23",
+    "snyk": "^1.437.2"
   },
   "_moduleAliases": {
     "@app/env": "build/cloud/env/env",
@@ -79,5 +82,6 @@
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-push": "npm run lint"
     }
-  }
+  },
+  "snyk": true
 }

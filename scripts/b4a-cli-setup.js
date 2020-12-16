@@ -78,6 +78,9 @@ function setDefaultApp() {
       child.on('error', reject);
       child.on('message', console.log);
     } catch (e) {
+      if (e.message.includes('has already been added')) {
+        return resolve(0);
+      }
       reject(e);
     }
   });
@@ -93,7 +96,7 @@ if (!downloadOnly) setupAccountKey()
   })
   .then(code => {
     if (code) console.error('Exit with error code ', code);
-    process.exit(code);
+    process.exit(0);
   })
   .catch(e => {
     console.error(e);

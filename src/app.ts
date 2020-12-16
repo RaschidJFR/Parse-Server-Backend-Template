@@ -7,18 +7,14 @@
 import { Express } from 'express';
 import * as express from 'express';
 import { environment } from '@app/env';
-import { router as routerWellKnown } from './routes/well-known';
 import { router as routerPublic } from './routes/public';
-import { router as routerFileProxy } from './routes/files';
 declare var app: Express; // On Back4app, `app` is already defined in the global context.
 
-const debug = process.env.NODE_ENV == 'development';
+const debug = process.env.NODE_ENV === 'development';
 console.log(`(${new Date().toISOString()}) loading express app in ${debug ? 'dev' : 'prod'} mode...`);
 
 // Load routes
 app
-  .use('/.well-known', routerWellKnown)
-  .use('/files', routerFileProxy)
   .use('/', routerPublic);
 
 // (Only for local server debug)
@@ -32,4 +28,3 @@ if (debug) {
 }
 
 console.log('express app loaded\n');
-

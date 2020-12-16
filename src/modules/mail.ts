@@ -1,86 +1,52 @@
-// For bypassing gmail security for testing porpuses (in case using gmail SMTP):
-// https://myaccount.google.com/u/0/lesssecureapps?pli=1&pageId=none
-// and follow this guide to enable a proper auth for using gmail smpt:
-// https://medium.com/@nickroach_50526/sending-emails-with-node-js-using-smtp-gmail-and-oauth2-316fe9c790a1
-
 import * as nodemailer from 'nodemailer';
 import * as ejs from 'ejs';
 import * as Styliner from 'styliner';
+import * as NodeCache from 'node-cache';
 
-export interface OAuth2 {
-  accessToken: string,
-  clientId: string,
-  clientSecret: string,
-  refreshToken: string,
-  type: string,
-  user: string,
+const cache = new NodeCache();
+
+interface ServerConfiguration {
+  /** Sender's name and email in the format `'Sender Name<no-reply@my.domain.io>'` */
+  from?: string;
+  smtp: SMTPConfiguration;
 }
 
-export namespace Mail {
-  /**
-	 * Current configuration
-	 */
-  export let config: MailModuleConfig;
+export interface SMTPConfiguration {
+  auth: {
+    pass: string,
+    user: string,
+  };
+  host: string;
+  port: number;
+}
 
-  export interface MailModuleConfig {
-    /**
-		 * Path to default .css file, relative to `templatePath`
-		 */
-    defaultCss?: string,
-    defaultService?: 'mailgun' | 'smtp'
-    /**
-		 * Sender's email: Name<no-reply@domain.com>
-		 */
-    from: string,
-    /** @deprecated Set STMP Mailgun settings in `nodemailerConfig.service = 'Mailgun'` instead */
-    mailgunConfig?: {
-      /**
-			 * Your mailgun key
-			 */
-      apiKey: string,
-      /**
-			 * Your domain registered on mailgun
-			 */
-      domain: string,	//
-    },
-    nodemailerConfig?: {
-      /**
-			 * If not provided, provide property `oauth2TokenFunction`
-			 */
-      auth?: {
-        pass: string,
-        user: string,
-      } | OAuth2,
-      host?: string,
-      port?: number,
-      secure?: boolean,
-      /**
-			 * You can use this parameter to omit **STMP** configuration params `host`/`port`/`secure`.
-			 */
-      service?: 'Gmail' | 'Godaddy' | 'Hotmail' | 'Mailgun' | 'Mandrill' | 'Outlook365' | 'Yahoo',
-    },
-    /**
-		 * Function to get the required OAuth2 tokens every time
-		 * an email is sent.
-		 * */
-    oauth2TokenFunction?: () => Promise<OAuth2>,
-    /**
-		 * Local folder with .ejs template files
-		 */
-    templatePath: string,
-  }
+export interface TemplateConfiguration {
+  /** Path fo default `.css` file relative to `templatePath` */
+  defaultCss?: string;
+  /** Path to folder containing the `.ejs` template files */
+  templatePath: string;
+  /** Time to live (in seconds) for config in cache */
+  ttl: number;
+}
 
-  export interface SendEmailParams {
-    html?: string,
-    subject: string,
-    template?: {
-      data: any,
-      file: string,
-    },
-    to: string | string[],
-  }
+export interface MailModuleConfiguration extends ServerConfiguration, TemplateConfiguration { }
 
-  export async function getMockSMPTConfig() {
+export interface SendEmailParams {
+  /** HTML content of the message (only when not passing a template) */
+  html?: string;
+  subject: string;
+  template?: {
+    data: { [key: string]: any }, // tslint:disable-line
+    /** Path to a .ejs file, relative to templates folder */
+    file: string,
+  };
+  to: string | string[];
+}
+
+export abstract class MailModule {
+  public static config = {} as MailModuleConfiguration;
+
+  public static async getMockSMTPConfig(): Promise<SMTPConfiguration> {
     const account = await nodemailer.createTestAccount();
     const auth = {
       user: account.user,
@@ -97,106 +63,131 @@ export namespace Mail {
     };
   }
 
-  export async function sendEmail(params: SendEmailParams): Promise<any> {
-    let html = params.html;
-
-    // Load ejs template
-    if (params.template) {
-      let file = params.template.file;
-      file = file.includes('.ejs') ? file : file + '.ejs';
-      html = await ejs.renderFile(`${Mail.config.templatePath}/${file}`, params.template.data);
-    }
-
-    // Add theme
-    if (Mail.config.defaultCss) {
-      html = `<link rel="stylesheet" href="${Mail.config.defaultCss}">` + html;
-      const styliner = new Styliner(Mail.config.templatePath);
-      html = await styliner.processHTML(html);
-    }
-
+  public static async sendEmail(params: SendEmailParams) {
     try {
+      let html = params.html;
+
+      // Load ejs template
+      if (params.template) {
+        let file = params.template.file;
+        file = file.includes('.ejs') ? file : file + '.ejs';
+        html = await ejs.renderFile(`${MailModule.config.templatePath}/${file}`, params.template.data);
+      }
+
+      // Add theme
+      if (MailModule.config.defaultCss) {
+        try {
+          const styliner = new Styliner(MailModule.config.templatePath);
+          html = await styliner.processHTML(`<link rel="stylesheet" href="${MailModule.config.defaultCss}">` + html);
+        } catch (e) {
+          console.error('Could not parse stylesheet: ', e);
+        }
+      }
+
       return sendMailSMTP({
         to: params.to,
         subject: params.subject,
         html,
       });
     } catch (e) {
-      throw new Error(e.toString() + '\nConfig:' + Mail.config);
+      console.error('Could not send email. ', params);
+      throw e;
     }
-  };
+  }
 
-  export function init(config: MailModuleConfig) {
-    Mail.config = config;
+  public static async init(config: TemplateConfiguration) {
+    MailModule.config = {
+      ...config,
+      ...await this.getServerConfig(),
+    };
+    console.log('Init Mail Module: ', this.config);
 
+    console.log('Define cloud function `mail:test`');
     Parse.Cloud.define('mail:test', async (request) => {
-      if (!request.master) throw 'requires master key';
+      if (!request.master) throw new Error('requires master key');
 
-      const response = await Mail.sendEmail({
+      const response = await MailModule.sendEmail({
         to: request.params.email,
         subject: `Test`,
         template: request.params.template || {
-          file: 'test.ejs',
-          data: { config: Mail.config }
+          file: 'ejs/test.ejs',
+          data: { config: MailModule.config }
         }
       });
 
       return { response, config };
     });
-
-    console.log('Inited Mail module\n', Mail.config);
   }
 
   /**
-   * Get SMTP configuration from Dashboard's Config
+   * Get SMTP configuration from Parse Dashboard's Config
    */
-  export async function getSMTPConfig() {
+  public static async getServerConfig(): Promise<ServerConfiguration> {
+    let config = cache.get<ServerConfiguration>('mailConfig');
+    if (config) {
+      return config;
+    }
 
-    const config = await Parse.Config.get({ useMasterKey: true });
-    const user: string = config.get('mail_smtp_user');
-    const pass: string = config.get('mail_smtp_password');
-    const host: string = config.get('mail_smtp_host');
-    const port: number = config.get('mail_smtp_port');
+    console.log('No mail configuration found in cache. Fetching...');
 
-    await Parse.Config.save({
-      mail_smtp_user: user || '',
-      mail_smtp_password: pass || '',
-      mail_smtp_host: host || '',
-      mail_smtp_port: port || 587,
-    }, {
-      mail_smtp_user: true,
-      mail_smtp_password: true,
-      mail_smtp_host: true,
-      mail_smtp_port: true,
-    });
+    if (process.env.TESTING) {
+      const mock = await this.getMockSMTPConfig();
+      config = { smtp: mock };
+    } else {
+      const parseConfig = await Parse.Config.get({ useMasterKey: true });
+      const user: string = parseConfig.get('mail_smtp_user');
+      const pass: string = parseConfig.get('mail_smtp_password');
+      const host: string = parseConfig.get('mail_smtp_host');
+      const port: number = parseConfig.get('mail_smtp_port');
+      const from: string = parseConfig.get('mail_from');
 
-    return {
-      auth: {
-        user,
-        pass
-      },
-      host,
-      port
-    };
+      // Create config if it does not exist
+      if (!user || !pass || !pass || !port || !from) {
+        await Parse.Config.save({
+          mail_from: from || 'Sender Name<no-reply@my.domain.com>',
+          mail_smtp_user: user || '',
+          mail_smtp_password: pass || '',
+          mail_smtp_host: host || '',
+          mail_smtp_port: port || 587,
+        }, {
+          mail_from: true,
+          mail_smtp_user: true,
+          mail_smtp_password: true,
+          mail_smtp_host: true,
+          mail_smtp_port: true,
+        });
+        console.log('Created default SMTP config');
+      }
+
+      config = {
+        from,
+        smtp: {
+          auth: { user, pass },
+          host,
+          port
+        }
+      };
+    }
+
+    cache.set('mailConfig', config, this.config.ttl);
+    console.log('Mail configuration cached');
+    return config;
   }
-
 }
 
-async function sendMailSMTP(params: { html: string, subject: string, to: string | string[], }): Promise<any> {
+async function sendMailSMTP(params: { html: string, subject: string, to: string | string[] }) {
   console.log(`Send email "%o" to %o`, params.subject, params.to);
 
-  // Refresh access token (if using Auth2)
-  if (Mail.config.oauth2TokenFunction)
-    Mail.config.nodemailerConfig.auth = await Mail.config.oauth2TokenFunction();
-
-  const transporter = nodemailer.createTransport(Mail.config.nodemailerConfig as any);
+  const transporter = nodemailer.createTransport(MailModule.config.smtp);
   const mailOptions = {
-    from: Mail.config.from,
+    from: MailModule.config.from,
     to: params.to,
     subject: params.subject,
     html: params.html
   };
 
-  return new Promise((resolve, reject) => {
+  // tslint:disable-next-line
+  return new Promise<any>((resolve, reject) => {
     transporter.sendMail(mailOptions, (error, info) => {
       if (error)
         reject(error);
@@ -205,4 +196,3 @@ async function sendMailSMTP(params: { html: string, subject: string, to: string 
     });
   });
 }
-

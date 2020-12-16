@@ -1,28 +1,25 @@
 require('module-alias/register');
-import { Auth } from '@modules/auth';
-import { initHooks } from './hooks';
 import { environment } from '@app/env';
+import { initHooks } from './hooks';
+import { MailModule } from '@modules/mail';
 import schemas from './schemas';
-import { Mail } from '@modules/mail';
+
+declare const global: { app: Express.Application; };
 
 async function initModules() {
   await Promise.all([
-    getSMTPConfig().then(config => {
-      Mail.init({
-        templatePath: `${environment.assetsPath}/templates`,
-        from: `MyApp<${config.auth.user}>`,
-        defaultCss: 'css/mailing.css',
-        nodemailerConfig: config
-      })
+    schemas(),
+    MailModule.init({
+      defaultCss: 'css/mailing.css',
+      templatePath: `${environment.assetsPath}/templates`,
+      ttl: 3600,
     }),
-    // Auth.createSuperUser(),
-    // initHooks(),
-    // schemas(),
   ]);
+  initHooks();
 }
 
 // Ready the server and modules
-const ready: Promise<any> = initModules();
+const ready = initModules();
 Parse.Cloud.define('ready', async () => {
   try {
     await ready;
@@ -35,13 +32,6 @@ Parse.Cloud.define('ready', async () => {
 
 // Start web hosting app manually if in local debug server
 if (environment.debug) {
-  global['app'] = require('express')();
+  global.app = require('express')();
   require('./app');
-}
-
-async function getSMTPConfig() {
-  if (process.env.TESTING)
-    return Mail.getMockSMPTConfig();
-
-  return Mail.getSMTPConfig();
 }

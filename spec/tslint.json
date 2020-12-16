@@ -1,0 +1,8 @@
+{
+  "extends": "../tslint.json",
+  "rules": {
+    "no-console": false,
+    "import-blacklist": [false],
+    "no-any": false
+  }
+}

@@ -50,3 +50,4 @@ credentials/*
 
 test-results
 .env
+dump/

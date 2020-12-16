@@ -1,11 +1,27 @@
 image: node:10.15.3
+options:
+  max-time: 15
 definitions:
   caches:
+    node-g: /usr/local/lib/node_modules
     git-modules: .git/modules
   services:
     mongo:
-      image: mongo:3.0.0
+      image: mongo:3.6.8
   steps:
+    - step: &step-lint-spell
+        name: Lint Spelling
+        caches:
+          - node
+          - git-modules
+        artifacts:
+          - build/**
+        script:
+          - git submodule init
+          - git config submodule.src/lib.url $GIT_SUBMODULE_LIB
+          - git submodule update
+          - npm i
+          - npm run lint:spell:all
     - step: &step-build-prod
         name: Build Prod
         caches:
@@ -15,13 +31,16 @@ definitions:
           - build/**
           - assets/**
         script:
-          - git submodule update --recursive --init
+          - git submodule init
+          - git config submodule.src/lib.url $GIT_SUBMODULE_LIB
+          - git submodule update
           - npm i
           - npm run build:prod
     - step: &step-test-local
         name: Test (Local MongoDB)
         caches:
           - node
+          - node-g
           - git-modules
         artifacts:
           - build/**
@@ -31,28 +50,17 @@ definitions:
         services:
           - mongo
         script:
-          - git submodule update --recursive --init
+          - git submodule init
+          - git config submodule.src/lib.url $GIT_SUBMODULE_LIB
+          - git submodule update
           - npm i
-          - npm i -g parse-server-mailgun@2.4.15 parse-server@3.10.0 express@4.17.1
-          - npm link parse-server
-          - npm link express
-          - npm test
-    - step: &step-test-live
-        <<: *step-test-local
-        name: Test (Live Database)
-        script:
-          - git submodule update --recursive --init
-          - npm i
-          - npm i -g parse-server-mailgun@2.4.15 parse-server@3.10.0 express@4.17.1
-          - npm link parse-server
-          - npm link express
-          - DB=prod npm test
-
+          - npm run postinstall
+          - npm run test:ci
     - step: &step-deploy-test
-        name: Deploy to Back4App (Test)
+        name: Deploy to B4A (Test)
         deployment: Test
         script:
-          - npm i flags
+          - npm i flags node-flags mkdirp ncp
           - mv build _build
           - node scripts/b4a-cli-setup --key=$B4A_ACCOUNT_KEY --project="$B4A_PROJECT_NAME"
           - cp -r _build/** build
@@ -61,20 +69,32 @@ pipelines:
   custom:
     deploy-to-test: &pipe-deploy-test
       - step: *step-build-prod
-      - step: *step-test-local
+      - parallel:
+        - step: *step-lint-spell
+        - step: *step-test-local
       - step: *step-deploy-test
-    deploy-to-production: &pipe-deploy-prod
+    deploy-to-staging: &pipe-deploy-staging
       - step: *step-build-prod
-      - step: *step-test-local
+      - parallel:
+        - step: *step-lint-spell
+        - step: *step-test-local
       - step:
           <<: *step-deploy-test
-          name: Deploy to Back4App (Live)
+          name: Deploy to B4A (Staging)
+          deployment: Staging
+    deploy-to-production: &pipe-deploy-prod
+      - step: *step-build-prod
+      - parallel:
+        - step: *step-lint-spell
+        - step: *step-test-local
+      - step:
+          <<: *step-deploy-test
+          name: Deploy to B4A (Live)
           deployment: Production
-  pull-requests:
-    feature/*: *pipe-deploy-test
-    hotfix/*: *pipe-deploy-test
-    bugfix/*: *pipe-deploy-test
   branches:
+    feature/*: *pipe-deploy-test
+    bugfix/*: *pipe-deploy-test
+    hotfix/*: *pipe-deploy-test
     release/*: *pipe-deploy-test
     stable: *pipe-deploy-prod
 

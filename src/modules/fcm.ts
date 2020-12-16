@@ -1,4 +1,3 @@
-import * as Parse from 'parse';
 import * as gcm from 'node-gcm';
 import { environment } from '@app/env';
 
@@ -7,34 +6,34 @@ export interface FCMConfig {
 }
 
 export interface FCMSendParams {
-  collapseKey?: string,
-  data?: { [key: string]: string }
-  deviceTokens?: string[],
+  collapseKey?: string;
+  data?: { [key: string]: string };
+  deviceTokens?: string[];
   notification: {
     body: string,
     title: string,
-  },
-  topic?: string,
+  };
+  topic?: string;
 }
 
 export class FCMModule {
 
-  static async getConfig() {
-    const config = await Parse.Config.get({ useMasterKey: true } as any);
+  public static async getConfig() {
+    const config = await Parse.Config.get({ useMasterKey: true });
     const attr: FCMConfig = {
       fcmServerKey: config.get('fcmServerKey') || '',
     };
-    await (Parse.Config.save as any)(attr, { fcmServerKey: true });
+    await Parse.Config.save(attr, { fcmServerKey: true });
     return attr;
   }
 
-  static init() {
+  public static init() {
     process.env.DEBUG = environment.debug ? 'node-gcm' : '';
     this.getConfig();
 
     Parse.Cloud.define('fcm:send', async (request) => {
       if (!request.master) throw new Error('Mastery Key required');
-      return FCMModule.send(request.params as any);
+      return FCMModule.send(request.params as any); // tslint:disable-line
     });
 
     Parse.Cloud.define('fcm:send:raw', async (request) => {
@@ -60,7 +59,7 @@ export class FCMModule {
     });
   }
 
-  static send(params: FCMSendParams, platform: 'ios' | 'android' = 'ios') {
+  public static send(params: FCMSendParams, platform: 'ios' | 'android' = 'ios') {
 
     if ((!params.deviceTokens || !params.deviceTokens.length) && !params.topic) {
       throw new Error('Missing recipient tokens');

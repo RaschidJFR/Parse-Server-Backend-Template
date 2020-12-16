@@ -1,4 +1,13 @@
-import { DEFAULT_ADMIN_ROLE } from '@modules/auth';
+type CLP<T extends Parse.Object> = Parse.Schema.CLP & {
+  protectedFields: {
+    '*'?: Extract<keyof T['attributes'], string>[];
+    /**
+     * @example
+     * `['role:Admin']: ['field1', 'field2']`
+     */
+    [userIdOrRoleName: string]: Extract<keyof T['attributes'], string>[];
+  };
+};
 
 /**
  * Setup up the database schemas on boot
@@ -13,42 +22,27 @@ import { DEFAULT_ADMIN_ROLE } from '@modules/auth';
  *    tryUpdateSchema(user)
  *  ]);
  */
-export default async function () {
-  // await setAllCLP(); // Make all schemas master-only
+export default async function() {
+  try {
+    // Write your code here
+  } catch (e) {
+    console.error(e);
+  }
 }
 
-async function setAllCLP() {
-
-  function setMasterKeyOnlyCLP(schemas: Parse.Schema[]): Parse.Schema[] {
-    const acl = { [`role:${DEFAULT_ADMIN_ROLE}`]: true };
-    const adminOnly = {
-      find: acl,
-      get: acl,
-      count: acl,
-      create: acl,
-      update: acl,
-      delete: acl,
-      addField: acl,
-      readUserFields: [],
-      writeUserFields: []
-    };
-    return schemas.map((schema: any) => {
-      schema.setCLP(adminOnly);
-      return schema;
-    });
-  }
-
-  try {
-    let schemas = await Parse.Schema.all();
-    schemas = schemas.map((s: any) => new Parse.Schema(s.className));
-    schemas = setMasterKeyOnlyCLP(schemas as Parse.Schema[]);
-
-    await Promise.all(
-      schemas.map(s => tryUpdateSchema(s))
-    );
-  } catch (e) {
-    console.warn(e);
-  }
+/** Apply same CLP to all opperations */
+function applyCLP<T extends Parse.Object>(schema: Parse.Schema<T>, acl: Parse.Schema.CLPField) {
+  const clp: Parse.Schema.CLP = {
+    find: acl,
+    get: acl,
+    count: acl,
+    create: acl,
+    update: acl,
+    delete: acl,
+    addField: acl,
+  };
+  schema.setCLP(clp);
+  return schema;
 }
 
 async function tryUpdateSchema(schema: Parse.Schema) {
@@ -58,7 +52,7 @@ async function tryUpdateSchema(schema: Parse.Schema) {
     try {
       await schema.update();
     } catch (e) {
-      console.warn(e);
+      console.warn((schema as any).className, '-', e);  // tslint:disable-line
     }
   }
 }

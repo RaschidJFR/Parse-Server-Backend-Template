@@ -1,18 +1,16 @@
 import { Twilio } from 'twilio';
 import * as generateRandomPassword from 'password-generator';
-import Parse = require('parse');
-
 export interface TwilioConfig {
-  twilioAccountSid: string,
-  twilioApplicationSid: string,
-  twilioAuthToken: string,
-  twilioTestPhone: string[],
-  twilioVerifySid: string,
+  twilioAccountSid: string;
+  twilioApplicationSid: string;
+  twilioAuthToken: string;
+  twilioTestPhone: string[];
+  twilioVerifySid: string;
 }
 
 export class AppTwilio {
 
-  static async getAccountPhoneNumbers(): Promise<string[]> {
+  public static async getAccountPhoneNumbers(): Promise<string[]> {
     const config = await AppTwilio.getConfig();
     const accountSid = config.twilioAccountSid;
     const authToken = config.twilioAuthToken;
@@ -24,8 +22,8 @@ export class AppTwilio {
       .map(res => res.phoneNumber);
   }
 
-  static async getConfig(): Promise<TwilioConfig> {
-    const config = await Parse.Config.get({ useMasterKey: true } as any);
+  public static async getConfig(): Promise<TwilioConfig> {
+    const config = await Parse.Config.get({ useMasterKey: true });
     const twilioConf = {
       twilioAccountSid: config.get('twilioAccountSid') || '',
       twilioApplicationSid: config.get('twilioApplicationSid') || '',
@@ -47,7 +45,7 @@ export class AppTwilio {
     return twilioConf;
   }
 
-  static async init() {
+  public static async init() {
     await this.getConfig();
 
     Parse.Cloud.define(`twilio:checkVerification`, async (request) => {
@@ -80,7 +78,7 @@ export class AppTwilio {
     Parse.Cloud.define(`twilio:getVerifiedNumbers`, async () => {
       return {
         numbers: await AppTwilio.getAccountPhoneNumbers()
-      }
+      };
     });
 
     Parse.Cloud.define(`twilio:sendVerificationSms`, async (request) => {
@@ -96,7 +94,7 @@ export class AppTwilio {
 
       const verification = await client.verify.services(verifySid)
         .verifications
-        .create({ to: phone, channel: 'sms' })
+        .create({ to: phone, channel: 'sms' });
       return verification.sid;
     });
   }

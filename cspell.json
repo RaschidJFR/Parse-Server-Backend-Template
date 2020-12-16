@@ -1,0 +1,26 @@
+{
+  "version": "0.1",
+  "language": "en",
+  "words": [
+    "mkdirp",
+    "tsmerge",
+    "githubusercontent",
+    "streetsidesoftware",
+    "visualstudio"
+  ],
+  "allowCompoundWords": true,
+  "ignorePaths": [
+
+  ],
+  "ignoreWords": [
+    "clampy",
+    "docx",
+    "jpgs",
+    "junit",
+    "pptx",
+    "smtp",
+    "xlink"
+  ],
+  "dictionaries": [],
+  "dictionaryDefinitions": []
+}

@@ -12,7 +12,14 @@
     {
       "name": "jasmine-spec-reporter#SpecReporter",
       "options": {
-        "displayStacktrace": "all"
+        "spec": {
+          "displayStacktrace": "none",
+          "displayErrorMessages": false
+        },
+        "summary": {
+          "displayStacktrace": "pretty",
+          "displayDuration": true
+        }
       }
     }
   ]

@@ -52,7 +52,7 @@
     "test:ci": "npx jasmine-ts"
   },
   "dependencies": {
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "cors": "^2.8.5",
     "deepmerge": "^4.2.2",
     "ejs": "^2.7.4",
@@ -65,7 +65,7 @@
     "password-generator": "^2.3.2",
     "serialize-error": "^7.0.1",
     "styliner": "^1.0.4",
-    "twilio": "^3.54.0",
+    "twilio": "^4.6.0",
     "xml2js": "^0.4.23"
   },
   "_moduleAliases": {

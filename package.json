@@ -52,7 +52,7 @@
     "test:ci": "npx jasmine-ts"
   },
   "dependencies": {
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "cors": "^2.8.5",
     "deepmerge": "^4.2.2",
     "ejs": "^2.7.4",

@@ -59,7 +59,7 @@
     "module-alias": "^2.2.0",
     "moment": "^2.27.0",
     "node-cache": "^5.1.2",
-    "node-gcm": "^1.0.3",
+    "node-gcm": "^1.0.4",
     "node-sass": "^5.0.0",
     "nodemailer": "^6.4.16",
     "password-generator": "^2.3.2",

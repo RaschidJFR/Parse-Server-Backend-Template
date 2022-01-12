@@ -65,7 +65,7 @@
     "password-generator": "^2.3.2",
     "serialize-error": "^7.0.1",
     "styliner": "^1.0.4",
-    "twilio": "^3.54.0",
+    "twilio": "^3.54.2",
     "xml2js": "^0.4.23"
   },
   "_moduleAliases": {

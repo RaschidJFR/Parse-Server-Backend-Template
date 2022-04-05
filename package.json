@@ -57,7 +57,7 @@
     "deepmerge": "^4.2.2",
     "ejs": "^2.7.4",
     "module-alias": "^2.2.0",
-    "moment": "^2.27.0",
+    "moment": "^2.29.2",
     "node-cache": "^5.1.2",
     "node-gcm": "^1.0.3",
     "node-sass": "^5.0.0",
